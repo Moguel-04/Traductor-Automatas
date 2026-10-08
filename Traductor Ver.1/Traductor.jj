@@ -1,0 +1,563 @@
+options {
+    STATIC = false;
+}
+
+PARSER_BEGIN(Traductor)
+
+import java.io.*;
+import java.util.*;
+
+/**
+ * Traductor.jj
+ * ------------
+ * Extiende la gramática original de Analizador.jj: SIGUE reconociendo y
+ * validando el mismo código C# (mismos tokens, mismas reglas, mismo
+ * análisis léxico/semántico impreso por consola), pero además cada regla
+ * ahora CONSTRUYE Y REGRESA un Nodo del AST en vez de ser "void".
+ *
+ * Ese árbol (Nodo "programa") es lo que luego recorren GeneradorPython y
+ * GeneradorJavaScript para producir el código traducido.
+ *
+ * Qué cambié respecto a Analizador.jj:
+ *   - Cada "void regla()" pasó a ser "Nodo regla()" y termina con
+ *     "{ return nodo; }".
+ *   - Se agregaron variables locales "Nodo n = new Nodo(\"tipo\")" y
+ *     llamadas a n.agregar(...) / n.atributo(...) para ir armando el árbol.
+ *   - mostrarToken(t) y regla(...) del original se conservan tal cual,
+ *     así que la salida de consola con el detalle léxico/sintáctico sigue
+ *     funcionando igual que antes.
+ */
+public class Traductor {
+
+    public static void regla(String r) {
+        System.out.println("Regla: " + r);
+    }
+
+    public static void mostrarToken(Token t) {
+        String palabra = t.image.toLowerCase();
+        System.out.println("----------------------");
+        if (Diccionario.mapa.containsKey(palabra)) {
+            PalabraInfo info = Diccionario.mapa.get(palabra);
+            System.out.println("Token: " + info.token);
+            System.out.println("Expresion Regular: " + info.expresion);
+            System.out.println("Lexema: " + t.image);
+            if (info.lenguaje != null && !info.lenguaje.isEmpty())
+                System.out.println("Lenguaje: " + info.lenguaje);
+            if (info.clasificacion != null && !info.clasificacion.isEmpty())
+                System.out.println("Clasificacion: " + info.clasificacion);
+            if (info.funcion != null && !info.funcion.isEmpty())
+                System.out.println("Funcion: " + info.funcion);
+        } else {
+            if (t.kind == IDENTIFICADOR) {
+                System.out.println("Token: IDENTIFICADOR");
+                System.out.println("Lexema: " + t.image);
+            } else if (t.kind == NUMERO) {
+                System.out.println("Token: NUMERO");
+                System.out.println("Lexema: " + t.image);
+            } else if (t.kind == DECIMAL) {
+                System.out.println("Token: DECIMAL");
+                System.out.println("Lexema: " + t.image);
+            } else if (t.kind == CADENA) {
+                System.out.println("Token: CADENA");
+                System.out.println("Lexema: " + t.image);
+            } else {
+                System.out.println("Token: " + t.image);
+                System.out.println("Lexema: " + t.image);
+            }
+        }
+    }
+
+    // ==================================================================
+    // MAIN: lee un archivo .cs, construye el AST y genera el código
+    // destino (Python o JavaScript).
+    // ==================================================================
+    public static void main(String args[]) throws Exception {
+        Diccionario.cargarCSV("palabras.csv");
+
+        System.out.println("========================================");
+        System.out.println("TRADUCTOR DE C# A PYTHON / JAVASCRIPT");
+        System.out.println("========================================\n");
+
+        BufferedReader teclado = new BufferedReader(new InputStreamReader(System.in, "UTF-8"));
+
+        while (true) {
+            System.out.print("Archivo .cs a traducir (o 'salir'): ");
+            String archivo = teclado.readLine();
+            if (archivo == null || archivo.trim().isEmpty() || archivo.equalsIgnoreCase("salir")) {
+                System.out.println("¡Hasta luego!");
+                break;
+            }
+
+            System.out.print("Lenguaje destino (python/javascript): ");
+            String destino = teclado.readLine();
+            if (destino == null) destino = "python";
+            destino = destino.trim().toLowerCase();
+
+            try {
+                StringBuilder contenido = new StringBuilder();
+                try (BufferedReader fr = new BufferedReader(new FileReader(archivo))) {
+                    String linea;
+                    while ((linea = fr.readLine()) != null) contenido.append(linea).append("\n");
+                }
+                String textoCompleto = contenido.toString();
+
+                Semantico.limpiar();
+
+                System.out.println("\n========== ANALISIS LEXICO-SINTACTICO ==========");
+                Traductor parser = new Traductor(new StringReader(textoCompleto));
+                Nodo raiz = parser.programa();
+
+                System.out.println("\n========== RESULTADO DEL ANALISIS ==========");
+                if (Semantico.hayErrores()) {
+                    System.out.println("✗ Se encontraron errores semanticos:");
+                    Semantico.imprimirErrores();
+                    System.out.println("\nNo se generara traduccion hasta corregir los errores.");
+                    continue;
+                }
+                System.out.println("✓ Sintaxis valida.");
+
+                String codigoGenerado;
+                String extension;
+                if (destino.startsWith("j")) {
+                    codigoGenerado = new GeneradorJavaScript().generar(raiz);
+                    extension = ".js";
+                } else {
+                    codigoGenerado = new GeneradorPython().generar(raiz);
+                    extension = ".py";
+                }
+
+                System.out.println("\n========== CODIGO TRADUCIDO ==========");
+                System.out.println(codigoGenerado);
+
+                String archivoSalida = archivo.replaceAll("\\.[^.]*$", "") + extension;
+                try (PrintWriter pw = new PrintWriter(new FileWriter(archivoSalida))) {
+                    pw.print(codigoGenerado);
+                }
+                System.out.println("\n(Guardado en " + archivoSalida + ")");
+
+            } catch (FileNotFoundException e) {
+                System.out.println("\nERROR: No se encontro el archivo '" + archivo + "'");
+            } catch (ParseException e) {
+                System.out.println("\n========== ERROR SINTACTICO ==========");
+                System.out.println("✗ " + e.getMessage());
+            } catch (Exception e) {
+                System.out.println("\nERROR: " + e.getMessage());
+                e.printStackTrace();
+            }
+
+            System.out.println("\n----------------------------------------\n");
+        }
+    }
+}
+
+PARSER_END(Traductor)
+
+// ======================================================
+// SKIP - Espacios en blanco (igual que el original)
+// ======================================================
+SKIP : { " " | "\t" | "\n" | "\r" }
+
+// ======================================================
+// TOKENS - idénticos a Analizador.jj
+// ======================================================
+TOKEN : {
+    < IF: "if" >
+|   < ELSE: "else" >
+|   < WHILE: "while" >
+|   < FOR: "for" >
+|   < DO: "do" >
+|   < BREAK: "break" >
+|   < CONTINUE: "continue" >
+|   < RETURN: "return" >
+|   < SWITCH: "switch" >
+|   < CASE: "case" >
+|   < DEFAULT_KW: "default" >
+|   < TRUE: "true" >
+|   < FALSE: "false" >
+|   < NULL: "null" >
+|   < PRINT: "print" >
+|   < PRINTLN: "println" >
+|   < FOREACH: "foreach" >
+|   < IN: "in" >
+|   < INT: "int" >
+|   < BOOLEAN: "boolean" >
+|   < STRING: "string" >
+|   < CHAR: "char" >
+|   < DOUBLE: "double" >
+|   < FLOAT: "float" >
+|   < LONG: "long" >
+|   < SHORT: "short" >
+|   < BYTE: "byte" >
+}
+
+TOKEN : {
+    < MENOR_IGUAL: "<=" >
+|   < MAYOR_IGUAL: ">=" >
+|   < IGUALDAD: "==" >
+|   < DIFERENTE: "!=" >
+|   < MENOR: "<" >
+|   < MAYOR: ">" >
+|   < SUMA: "+" >
+|   < RESTA: "-" >
+|   < MULT: "*" >
+|   < DIV: "/" >
+|   < MOD: "%" >
+|   < ASIGNACION: "=" >
+|   < INCREMENTO: "++" >
+|   < DECREMENTO: "--" >
+|   < AND_LOGICO: "&&" >
+|   < OR_LOGICO: "||" >
+|   < NOT_LOGICO: "!" >
+}
+
+TOKEN : {
+    < PARENTESIS_IZQ: "(" >
+|   < PARENTESIS_DER: ")" >
+|   < LLAVE_IZQ: "{" >
+|   < LLAVE_DER: "}" >
+|   < CORCHETE_IZQ: "[" >
+|   < CORCHETE_DER: "]" >
+|   < PUNTO_Y_COMA: ";" >
+|   < DOS_PUNTOS: ":" >
+|   < COMA: "," >
+|   < PUNTO: "." >
+}
+
+TOKEN : {
+    < DECIMAL: (["0"-"9"])+ "." (["0"-"9"])+ >
+|   < NUMERO: (["0"-"9"])+ >
+|   < CADENA: "\"" (~["\""])* "\"" | "\'" (~["\'"])* "\'" >
+|   < IDENTIFICADOR: (["a"-"z","A"-"Z"]) (["a"-"z","A"-"Z","0"-"9"])* >
+}
+
+// ======================================================
+// GRAMATICA - cada regla ahora construye y regresa un Nodo
+// ======================================================
+
+Nodo programa() :
+{ Nodo raiz = new Nodo("programa"); Nodo hijo; }
+{
+    ( hijo=instruccion() { raiz.agregar(hijo); } )+ <EOF>
+    { return raiz; }
+}
+
+Nodo instruccion() :
+{ Nodo n; }
+{
+    (
+          LOOKAHEAD(2) n=declaracionVariable()
+        | LOOKAHEAD(2) n=asignacion()
+        | LOOKAHEAD(2) n=condicion()
+        | LOOKAHEAD(2) n=cicloMientras()
+        | LOOKAHEAD(2) n=cicloPara()
+        | LOOKAHEAD(2) n=cicloDoWhile()
+        | LOOKAHEAD(2) n=cicloForeach()
+        | LOOKAHEAD(2) n=estructuraSwitch()
+        | LOOKAHEAD(2) n=escritura()
+        | LOOKAHEAD(2) n=breakInstruccion()
+        | LOOKAHEAD(2) n=continueInstruccion()
+        | LOOKAHEAD(2) n=returnInstruccion()
+        | LOOKAHEAD(2) n=bloque()
+    )
+    { return n; }
+}
+
+// ------------------------------------------------------
+// DECLARACION DE VARIABLES
+// ------------------------------------------------------
+Nodo declaracionVariable() :
+{ Token t; Nodo n = new Nodo("declaracionVariable"); Nodo exp = null; }
+{
+    { regla("declaracionVariable -> tipo identificador (asignacion expresion)? puntocoma"); }
+    (
+          t=<INT>     { mostrarToken(t); n.atributo("tipoDato", "int"); }
+        | t=<BOOLEAN> { mostrarToken(t); n.atributo("tipoDato", "boolean"); }
+        | t=<STRING>  { mostrarToken(t); n.atributo("tipoDato", "string"); }
+        | t=<CHAR>    { mostrarToken(t); n.atributo("tipoDato", "char"); }
+        | t=<DOUBLE>  { mostrarToken(t); n.atributo("tipoDato", "double"); }
+        | t=<FLOAT>   { mostrarToken(t); n.atributo("tipoDato", "float"); }
+        | t=<LONG>    { mostrarToken(t); n.atributo("tipoDato", "long"); }
+        | t=<SHORT>   { mostrarToken(t); n.atributo("tipoDato", "short"); }
+        | t=<BYTE>    { mostrarToken(t); n.atributo("tipoDato", "byte"); }
+    )
+    t=<IDENTIFICADOR> {
+        mostrarToken(t);
+        n.valor = t.image;
+        Semantico.declararVariable(t.image, "variable");
+    }
+    [
+        t=<ASIGNACION> { mostrarToken(t); }
+        exp=expresion() { n.agregar(exp); }
+    ]
+    t=<PUNTO_Y_COMA> { mostrarToken(t); return n; }
+}
+
+// ------------------------------------------------------
+// ASIGNACION
+// ------------------------------------------------------
+Nodo asignacion() :
+{ Token t; Nodo n = new Nodo("asignacion"); Nodo exp; }
+{
+    { regla("asignacion -> identificador asignacion expresion puntocoma"); }
+    t=<IDENTIFICADOR> { mostrarToken(t); n.valor = t.image; }
+    t=<ASIGNACION> { mostrarToken(t); }
+    exp=expresion() { n.agregar(exp); }
+    t=<PUNTO_Y_COMA> { mostrarToken(t); return n; }
+}
+
+// ------------------------------------------------------
+// IF - ELSE
+// ------------------------------------------------------
+Nodo condicion() :
+{ Token t; Nodo n = new Nodo("condicion"); Nodo cond, bIf, bElse; }
+{
+    { regla("condicion -> if ( expresionLogica ) bloque ( else bloque )?"); }
+    t=<IF> { mostrarToken(t); }
+    t=<PARENTESIS_IZQ> { mostrarToken(t); }
+    cond=expresionLogica() { n.agregar(cond); }
+    t=<PARENTESIS_DER> { mostrarToken(t); }
+    bIf=bloque() { n.agregar(bIf); }
+    [
+        t=<ELSE> { mostrarToken(t); n.atributo("tieneElse", "true"); }
+        bElse=bloque() { n.agregar(bElse); }
+    ]
+    { return n; }
+}
+
+// ------------------------------------------------------
+// WHILE
+// ------------------------------------------------------
+Nodo cicloMientras() :
+{ Token t; Nodo n = new Nodo("cicloMientras"); Nodo cond, cuerpo; }
+{
+    { regla("cicloMientras -> while ( expresionLogica ) bloque"); }
+    t=<WHILE> { mostrarToken(t); }
+    t=<PARENTESIS_IZQ> { mostrarToken(t); }
+    cond=expresionLogica() { n.agregar(cond); }
+    t=<PARENTESIS_DER> { mostrarToken(t); }
+    cuerpo=bloque() { n.agregar(cuerpo); return n; }
+}
+
+// ------------------------------------------------------
+// DO-WHILE
+// ------------------------------------------------------
+Nodo cicloDoWhile() :
+{ Token t; Nodo n = new Nodo("cicloDoWhile"); Nodo cuerpo, cond; }
+{
+    { regla("cicloDoWhile -> do bloque while ( expresionLogica ) puntocoma"); }
+    t=<DO> { mostrarToken(t); }
+    cuerpo=bloque() { n.agregar(cuerpo); }
+    t=<WHILE> { mostrarToken(t); }
+    t=<PARENTESIS_IZQ> { mostrarToken(t); }
+    cond=expresionLogica() { n.agregar(cond); }
+    t=<PARENTESIS_DER> { mostrarToken(t); }
+    t=<PUNTO_Y_COMA> { mostrarToken(t); return n; }
+}
+
+// ------------------------------------------------------
+// FOREACH
+// ------------------------------------------------------
+Nodo cicloForeach() :
+{ Token t; Nodo n = new Nodo("cicloForeach"); Nodo cuerpo; }
+{
+    { regla("cicloForeach -> foreach ( tipo identificador in coleccion ) bloque"); }
+    t=<FOREACH> { mostrarToken(t); }
+    t=<PARENTESIS_IZQ> { mostrarToken(t); }
+    (
+          t=<INT>     { mostrarToken(t); n.atributo("tipoDato", "int"); }
+        | t=<STRING>  { mostrarToken(t); n.atributo("tipoDato", "string"); }
+        | t=<BOOLEAN> { mostrarToken(t); n.atributo("tipoDato", "boolean"); }
+    )
+    t=<IDENTIFICADOR> { mostrarToken(t); n.valor = t.image; }
+    t=<IN> { mostrarToken(t); }
+    t=<IDENTIFICADOR> { mostrarToken(t); n.atributo("coleccion", t.image); }
+    t=<PARENTESIS_DER> { mostrarToken(t); }
+    cuerpo=bloque() { n.agregar(cuerpo); return n; }
+}
+
+// ------------------------------------------------------
+// SWITCH
+// ------------------------------------------------------
+Nodo estructuraSwitch() :
+{ Token t; Nodo n = new Nodo("estructuraSwitch"); Nodo exp, caso; }
+{
+    { regla("switch -> switch ( expresion ) { casos+ default? }"); }
+    t=<SWITCH> { mostrarToken(t); }
+    t=<PARENTESIS_IZQ> { mostrarToken(t); }
+    exp=expresion() { n.agregar(exp); }
+    t=<PARENTESIS_DER> { mostrarToken(t); }
+    t=<LLAVE_IZQ> { mostrarToken(t); }
+    ( caso=casoSwitch() { n.agregar(caso); } )+
+    [ caso=casoDefaultSwitch() { n.agregar(caso); } ]
+    t=<LLAVE_DER> { mostrarToken(t); return n; }
+}
+
+Nodo casoSwitch() :
+{ Token t; Nodo n = new Nodo("casoSwitch"); Nodo val, inst; }
+{
+    { regla("caso -> case valor : instrucciones"); }
+    t=<CASE> { mostrarToken(t); }
+    val=valor() { n.agregar(val); }
+    t=<DOS_PUNTOS> { mostrarToken(t); }
+    ( inst=instruccion() { n.agregar(inst); } )*
+    { return n; }
+}
+
+Nodo casoDefaultSwitch() :
+{ Token t; Nodo n = new Nodo("casoDefault"); Nodo inst; }
+{
+    { regla("default -> default : instrucciones"); }
+    t=<DEFAULT_KW> { mostrarToken(t); }
+    t=<DOS_PUNTOS> { mostrarToken(t); }
+    ( inst=instruccion() { n.agregar(inst); } )*
+    { return n; }
+}
+
+// ------------------------------------------------------
+// BREAK, CONTINUE, RETURN
+// ------------------------------------------------------
+Nodo breakInstruccion() :
+{ Token t; }
+{
+    { regla("break -> break puntocoma"); }
+    t=<BREAK> { mostrarToken(t); }
+    t=<PUNTO_Y_COMA> { mostrarToken(t); return new Nodo("breakInstruccion"); }
+}
+
+Nodo continueInstruccion() :
+{ Token t; }
+{
+    { regla("continue -> continue puntocoma"); }
+    t=<CONTINUE> { mostrarToken(t); }
+    t=<PUNTO_Y_COMA> { mostrarToken(t); return new Nodo("continueInstruccion"); }
+}
+
+Nodo returnInstruccion() :
+{ Token t; Nodo n = new Nodo("returnInstruccion"); Nodo exp; }
+{
+    { regla("return -> return (expresion)? puntocoma"); }
+    t=<RETURN> { mostrarToken(t); }
+    [ exp=expresion() { n.agregar(exp); } ]
+    t=<PUNTO_Y_COMA> { mostrarToken(t); return n; }
+}
+
+// ------------------------------------------------------
+// FOR
+// ------------------------------------------------------
+Nodo cicloPara() :
+{ Token t; Nodo n = new Nodo("cicloPara"); Nodo init, cond, upd, cuerpo; }
+{
+    { regla("cicloPara -> for ( asignacionSimple ; expresionLogica ; asignacionSimple ) bloque"); }
+    t=<FOR> { mostrarToken(t); }
+    t=<PARENTESIS_IZQ> { mostrarToken(t); }
+    init=asignacionSimple() { n.agregar(init); }
+    t=<PUNTO_Y_COMA> { mostrarToken(t); }
+    cond=expresionLogica() { n.agregar(cond); }
+    t=<PUNTO_Y_COMA> { mostrarToken(t); }
+    upd=asignacionSimple() { n.agregar(upd); }
+    t=<PARENTESIS_DER> { mostrarToken(t); }
+    cuerpo=bloque() { n.agregar(cuerpo); return n; }
+}
+
+Nodo asignacionSimple() :
+{ Token t; Nodo n = new Nodo("asignacionSimple"); Nodo exp; }
+{
+    t=<IDENTIFICADOR> { mostrarToken(t); n.valor = t.image; }
+    t=<ASIGNACION> { mostrarToken(t); }
+    exp=expresion() { n.agregar(exp); return n; }
+}
+
+// ------------------------------------------------------
+// PRINT
+// ------------------------------------------------------
+Nodo escritura() :
+{ Token t; Nodo n = new Nodo("escritura"); Nodo exp; }
+{
+    { regla("escritura -> print ( expresion ) puntocoma"); }
+    (
+          t=<PRINT>   { mostrarToken(t); n.atributo("variante", "print"); }
+        | t=<PRINTLN> { mostrarToken(t); n.atributo("variante", "println"); }
+    )
+    t=<PARENTESIS_IZQ> { mostrarToken(t); }
+    exp=expresion() { n.agregar(exp); }
+    t=<PARENTESIS_DER> { mostrarToken(t); }
+    t=<PUNTO_Y_COMA> { mostrarToken(t); return n; }
+}
+
+// ------------------------------------------------------
+// BLOQUE
+// ------------------------------------------------------
+Nodo bloque() :
+{ Token t; Nodo n = new Nodo("bloque"); Nodo inst; }
+{
+    { regla("bloque -> { instrucciones* }"); }
+    t=<LLAVE_IZQ> { mostrarToken(t); }
+    ( inst=instruccion() { n.agregar(inst); } )*
+    t=<LLAVE_DER> { mostrarToken(t); return n; }
+}
+
+// ------------------------------------------------------
+// EXPRESIONES LOGICAS
+// ------------------------------------------------------
+Nodo expresionLogica() :
+{ Nodo n = new Nodo("expresionLogica"); Nodo v1, v2; String op; }
+{
+    v1=valor() { n.agregar(v1); }
+    [
+        op=operadorRelacional() { n.atributo("operador", op); }
+        v2=valor() { n.agregar(v2); }
+    ]
+    { return n; }
+}
+
+String operadorRelacional() :
+{ Token t; }
+{
+      t=<MENOR>        { mostrarToken(t); return "<"; }
+    | t=<MAYOR>         { mostrarToken(t); return ">"; }
+    | t=<MENOR_IGUAL>   { mostrarToken(t); return "<="; }
+    | t=<MAYOR_IGUAL>   { mostrarToken(t); return ">="; }
+    | t=<IGUALDAD>      { mostrarToken(t); return "=="; }
+    | t=<DIFERENTE>     { mostrarToken(t); return "!="; }
+}
+
+// ------------------------------------------------------
+// EXPRESIONES ARITMETICAS
+// ------------------------------------------------------
+Nodo expresion() :
+{ Nodo n = new Nodo("expresion"); Nodo v1, v2; String op; }
+{
+    v1=valor() { n.agregar(v1); }
+    [
+        op=operadorAritmetico() { n.atributo("operador", op); }
+        v2=valor() {
+            n.agregar(v2);
+            Semantico.validarOperacionAritmetica(
+                v1.atributo("tipoValor"), v2.atributo("tipoValor"), op);
+            regla("expresion -> " + v1.atributo("tipoValor") + " " + op + " " + v2.atributo("tipoValor"));
+        }
+    ]
+    { return n; }
+}
+
+String operadorAritmetico() :
+{ Token t; }
+{
+      t=<SUMA>  { mostrarToken(t); return "+"; }
+    | t=<RESTA> { mostrarToken(t); return "-"; }
+    | t=<MULT>  { mostrarToken(t); return "*"; }
+    | t=<DIV>   { mostrarToken(t); return "/"; }
+    | t=<MOD>   { mostrarToken(t); return "%"; }
+}
+
+Nodo valor() :
+{ Token t; Nodo n; }
+{
+      t=<IDENTIFICADOR> { mostrarToken(t); n = new Nodo("valor", t.image); n.atributo("tipoValor", "identificador"); return n; }
+    | t=<NUMERO>         { mostrarToken(t); n = new Nodo("valor", t.image); n.atributo("tipoValor", "numero"); return n; }
+    | t=<DECIMAL>        { mostrarToken(t); n = new Nodo("valor", t.image); n.atributo("tipoValor", "decimal"); return n; }
+    | t=<CADENA>         { mostrarToken(t); n = new Nodo("valor", t.image); n.atributo("tipoValor", "cadena"); return n; }
+    | t=<TRUE>           { mostrarToken(t); n = new Nodo("valor", t.image); n.atributo("tipoValor", "true"); return n; }
+    | t=<FALSE>          { mostrarToken(t); n = new Nodo("valor", t.image); n.atributo("tipoValor", "false"); return n; }
+    | t=<NULL>           { mostrarToken(t); n = new Nodo("valor", t.image); n.atributo("tipoValor", "null"); return n; }
+}

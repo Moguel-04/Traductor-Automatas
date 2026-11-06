@@ -9,26 +9,6 @@ package traductor;
 import java.io.*;
 import java.util.*;
 
-/**
- * Traductor.jj
- * ------------
- * Extiende la gramática original de Analizador.jj: SIGUE reconociendo y
- * validando el mismo código C# (mismos tokens, mismas reglas, mismo
- * análisis léxico/semántico impreso por consola), pero además cada regla
- * ahora CONSTRUYE Y REGRESA un Nodo del AST en vez de ser "void".
- *
- * Ese árbol (Nodo "programa") es lo que luego recorren GeneradorPython y
- * GeneradorJavaScript para producir el código traducido.
- *
- * Qué cambié respecto a Analizador.jj:
- *   - Cada "void regla()" pasó a ser "Nodo regla()" y termina con
- *     "{ return nodo; }".
- *   - Se agregaron variables locales "Nodo n = new Nodo(\"tipo\")" y
- *     llamadas a n.agregar(...) / n.atributo(...) para ir armando el árbol.
- *   - mostrarToken(t) y regla(...) del original se conservan tal cual,
- *     así que la salida de consola con el detalle léxico/sintáctico sigue
- *     funcionando igual que antes.
- */
 public class Traductor {
 
     public static void regla(String r) {
@@ -36,35 +16,232 @@ public class Traductor {
     }
 
     public static void mostrarToken(Token t) {
+
         String palabra = t.image.toLowerCase();
-        System.out.println("----------------------");
-        if (Diccionario.mapa.containsKey(palabra)) {
-            PalabraInfo info = Diccionario.mapa.get(palabra);
-            System.out.println("Token: " + info.token);
-            System.out.println("Expresion Regular: " + info.expresion);
-            System.out.println("Lexema: " + t.image);
-            if (info.lenguaje != null && !info.lenguaje.isEmpty())
-                System.out.println("Lenguaje: " + info.lenguaje);
-            if (info.clasificacion != null && !info.clasificacion.isEmpty())
-                System.out.println("Clasificacion: " + info.clasificacion);
-            if (info.funcion != null && !info.funcion.isEmpty())
-                System.out.println("Funcion: " + info.funcion);
+
+        // Valores generales de los metadatos.
+        String token = "";
+        String expresion = "No especificada";
+        String lexema = t.image;
+        String lenguajes = "C#";
+        String clasificacion = "No especificada";
+        String funcion = "Elemento reconocido por el analizador lexico.";
+        String estado = "Implementado";
+
+        PalabraInfo info = null;
+
+        // ==================================================
+        // 1. BUSCAR INFORMACION EN EL DICCIONARIO
+        // ==================================================
+
+        // Los comentarios utilizan claves especiales.
+        if (t.kind == COMENTARIO_LINEA) {
+
+            info = Diccionario.mapa.get("// ...");
+
+        } else if (t.kind == COMENTARIO_BLOQUE) {
+
+            info = Diccionario.mapa.get("/* ... */");
+
         } else {
-            if (t.kind == IDENTIFICADOR) {
-                System.out.println("Token: IDENTIFICADOR");
-                System.out.println("Lexema: " + t.image);
-            } else if (t.kind == NUMERO) {
-                System.out.println("Token: NUMERO");
-                System.out.println("Lexema: " + t.image);
-            } else if (t.kind == DECIMAL) {
-                System.out.println("Token: DECIMAL");
-                System.out.println("Lexema: " + t.image);
-            } else if (t.kind == CADENA) {
-                System.out.println("Token: CADENA");
-                System.out.println("Lexema: " + t.image);
-            } else {
-                System.out.println("Token: " + t.image);
-                System.out.println("Lexema: " + t.image);
+            // Primero se intenta buscar por el lexema real.
+            info = Diccionario.mapa.get(palabra);
+
+            // Si no existe, se busca mediante el nombre del tipo de token.
+            // Esto permite consultar entradas genéricas como <CARACTER>,
+            // <NUMERO>, <DECIMAL>, <CADENA> e <IDENTIFICADOR>.
+            if (info == null) {
+
+                String claveToken = null;
+
+                switch (t.kind) {
+
+                    case IDENTIFICADOR:
+                        claveToken = "<identificador>";
+                        break;
+
+                    case NUMERO:
+                        claveToken = "<numero>";
+                        break;
+
+                    case DECIMAL:
+                        claveToken = "<decimal>";
+                        break;
+
+                    case CARACTER:
+                        claveToken = "<caracter>";
+                        break;
+
+                    case CADENA:
+                        claveToken = "<cadena>";
+                        break;
+                }
+
+                if (claveToken != null) {
+                    info = Diccionario.mapa.get(claveToken);
+                }
+            }
+        }
+
+        // ==================================================
+        // 2. UTILIZAR LOS METADATOS DEL CSV
+        // ==================================================
+
+        if (info != null) {
+
+            token = info.token;
+
+            if (info.expresion != null && !info.expresion.isEmpty())
+                expresion = info.expresion;
+
+            if (info.lenguaje != null && !info.lenguaje.isEmpty())
+                lenguajes = info.lenguaje;
+
+            if (info.clasificacion != null && !info.clasificacion.isEmpty())
+                clasificacion = info.clasificacion;
+
+            if (info.funcion != null && !info.funcion.isEmpty())
+                funcion = info.funcion;
+
+            if (info.estado != null && !info.estado.isEmpty())
+                estado = info.estado;
+
+        } else {
+
+            // ==================================================
+            // 3. METADATOS PARA TOKENS NO REGISTRADOS EN EL CSV
+            // ==================================================
+
+            switch (t.kind) {
+
+                case IDENTIFICADOR:
+
+                    token = "IDENTIFICADOR";
+                    clasificacion = "Identificador";
+                    funcion = "Nombre definido por el programador para representar variables, funciones, parametros u otros elementos del programa.";
+                    break;
+
+                case NUMERO:
+
+                    token = "NUMERO";
+                    clasificacion = "Literal numerico entero";
+                    funcion = "Representa un valor numerico entero escrito directamente en el codigo fuente.";
+                    break;
+
+                case DECIMAL:
+
+                    token = "DECIMAL";
+                    clasificacion = "Literal numerico decimal";
+                    funcion = "Representa un valor numerico con parte decimal escrito directamente en el codigo fuente.";
+                    break;
+
+                case CADENA:
+
+                    token = "CADENA";
+                    clasificacion = "Literal de cadena";
+                    funcion = "Representa una secuencia de caracteres delimitada por comillas.";
+                    break;
+
+                case CARACTER:
+
+                    token = "CARACTER";
+                    clasificacion = "Literal de caracter";
+                    funcion = "Representa un unico caracter delimitado por comillas simples; admite secuencias de escape.";
+                    break;
+
+                case COMENTARIO_LINEA:
+
+                    token = "COMENTARIO_LINEA";
+                    expresion = "// (hasta fin de linea)";
+                    clasificacion = "Comentario";
+                    funcion = "Comentario de una linea que no se ejecuta como instruccion.";
+                    break;
+
+                case COMENTARIO_BLOQUE:
+
+                    token = "COMENTARIO_BLOQUE";
+                    expresion = "/* ... */";
+                    clasificacion = "Comentario";
+                    funcion = "Comentario delimitado que puede abarcar varias lineas.";
+                    break;
+
+                default:
+
+                    token = TraductorConstants.tokenImage[t.kind];
+                    clasificacion = "Simbolo o elemento lexico";
+                    funcion = "Elemento reconocido por las reglas lexicas del lenguaje fuente.";
+                    break;
+            }
+        }
+
+        // ==================================================
+        // 4. MOSTRAR TODOS LOS TOKENS CON EL MISMO FORMATO
+        // ==================================================
+
+        System.out.println("----------------------");
+        System.out.println("Token: " + token);
+        System.out.println("Expresion Regular: " + expresion);
+        System.out.println("Lexema: " + lexema);
+        System.out.println("Lenguajes: " + lenguajes);
+        System.out.println("Clasificacion: " + clasificacion);
+        System.out.println("Funcion: " + funcion);
+        System.out.println("Estado: " + estado);
+    }
+
+    /**
+     * Comprueba si la expresion que comienza con un parentesis
+     * contiene operadores relacionales o logicos.
+     *
+     * No consume tokens; solamente inspecciona los siguientes.
+     */
+    private boolean parentesisContieneOperadorLogico() {
+
+        if (getToken(1).kind != PARENTESIS_IZQ) {
+            return false;
+        }
+
+        int profundidad = 0;
+        boolean contieneOperador = false;
+
+        for (int i = 1; ; i++) {
+
+            Token actual = getToken(i);
+
+            if (actual.kind == EOF) {
+                return false;
+            }
+
+            if (actual.kind == PARENTESIS_IZQ) {
+
+                profundidad++;
+
+            } else if (actual.kind == PARENTESIS_DER) {
+
+                profundidad--;
+
+                // Llegamos al parentesis que cierra
+                // la agrupacion que estamos inspeccionando.
+                if (profundidad == 0) {
+                    return contieneOperador;
+                }
+
+            } else if (profundidad > 0) {
+
+                switch (actual.kind) {
+
+                    case MENOR:
+                    case MAYOR:
+                    case MENOR_IGUAL:
+                    case MAYOR_IGUAL:
+                    case IGUALDAD:
+                    case DIFERENTE:
+                    case AND_LOGICO:
+                    case OR_LOGICO:
+                    case NOT_LOGICO:
+
+                        contieneOperador = true;
+                        break;
+                }
             }
         }
     }
@@ -78,11 +255,15 @@ PARSER_END(Traductor)
 SKIP : { " " | "\t" | "\n" | "\r" }
 
 // ======================================================
-// TOKENS - idénticos a Analizador.jj
+// TOKENS
 // ======================================================
 TOKEN : {
     < IF: "if" >
 |   < ELSE: "else" >
+|   < TRY: "try" >
+|   < CATCH: "catch" >
+|   < FINALLY: "finally" >
+|   < THROW: "throw" >
 |   < WHILE: "while" >
 |   < FOR: "for" >
 |   < DO: "do" >
@@ -97,9 +278,15 @@ TOKEN : {
 |   < NULL: "null" >
 |   < PRINT: "print" >
 |   < PRINTLN: "println" >
+|   < CONSOLE: "Console" >
+|   < WRITELINE: "WriteLine" >
+|   < READLINE: "ReadLine" >
+|   < READKEY: "ReadKey" >
 |   < FOREACH: "foreach" >
 |   < IN: "in" >
 |   < INT: "int" >
+|   < NEW: "new" >
+|   < BOOL: "bool" >
 |   < BOOLEAN: "boolean" >
 |   < STRING: "string" >
 |   < CHAR: "char" >
@@ -108,6 +295,13 @@ TOKEN : {
 |   < LONG: "long" >
 |   < SHORT: "short" >
 |   < BYTE: "byte" >
+|   < VOID: "void" >
+|   < STATIC: "static" >
+|   < CONST: "const" >
+|   < PUBLIC: "public" >
+|   < PRIVATE: "private" >
+|   <COMENTARIO_LINEA: "//" (~["\n", "\r"])* >
+|   <COMENTARIO_BLOQUE: "/*" (~["*"] | "*" ~["/"])* "*/" >
 }
 
 TOKEN : {
@@ -117,6 +311,11 @@ TOKEN : {
 |   < DIFERENTE: "!=" >
 |   < MENOR: "<" >
 |   < MAYOR: ">" >
+|   < SUMA_ASIGNACION: "+=">
+|   < RESTA_ASIGNACION: "-=">
+|   < MULT_ASIGNACION: "*=" >
+|   < DIV_ASIGNACION: "/=" >
+|   < MOD_ASIGNACION: "%=" >
 |   < SUMA: "+" >
 |   < RESTA: "-" >
 |   < MULT: "*" >
@@ -144,9 +343,11 @@ TOKEN : {
 }
 
 TOKEN : {
-    < DECIMAL: (["0"-"9"])+ "." (["0"-"9"])+ >
+    < DECIMAL: (["0"-"9"])+ "." (["0"-"9"])+ (["f","F","d","D"])? >
 |   < NUMERO: (["0"-"9"])+ >
-|   < CADENA: "\"" (~["\""])* "\"" | "\'" (~["\'"])* "\'" >
+|   < CARACTER: "'" (~["'", "\\", "\n", "\r"] | "\\" (["'", "\"", "\\", "0", "a", "b", "f", "n", "r", "t", "v"]
+              | "u" (["0"-"9", "a"-"f", "A"-"F"]){4} | "x" (["0"-"9", "a"-"f", "A"-"F"]){1,4})) "'">
+|   < CADENA: "\"" (~["\"", "\\", "\n", "\r"] | "\\" ["\"", "\\", "n", "r", "t", "0"])* "\"" >
 |   < IDENTIFICADOR: (["a"-"z","A"-"Z"]) (["a"-"z","A"-"Z","0"-"9"])* >
 }
 
@@ -165,65 +366,436 @@ Nodo instruccion() :
 { Nodo n; }
 {
     (
-          LOOKAHEAD(2) n=declaracionVariable()
+          LOOKAHEAD(2) n=comentario()
+        | LOOKAHEAD(3) n=declaracionFuncion()
+        | LOOKAHEAD(2) n=declaracionVariable()
+        | LOOKAHEAD(6) n=copiarArreglo()
+        | LOOKAHEAD(4) n=operacionArreglo()
         | LOOKAHEAD(2) n=asignacion()
         | LOOKAHEAD(2) n=incrementoDecremento()
         | LOOKAHEAD(2) n=condicion()
+        | LOOKAHEAD(2) n=manejoExcepciones()
+        | LOOKAHEAD(2) n=throwInstruccion()
         | LOOKAHEAD(2) n=cicloMientras()
         | LOOKAHEAD(2) n=cicloPara()
         | LOOKAHEAD(2) n=cicloDoWhile()
         | LOOKAHEAD(2) n=cicloForeach()
         | LOOKAHEAD(2) n=estructuraSwitch()
         | LOOKAHEAD(2) n=escritura()
+        | LOOKAHEAD(<IDENTIFICADOR> <PARENTESIS_IZQ>)
+          n=llamadaFuncionInstruccion()
         | LOOKAHEAD(2) n=breakInstruccion()
         | LOOKAHEAD(2) n=continueInstruccion()
         | LOOKAHEAD(2) n=returnInstruccion()
         | LOOKAHEAD(2) n=bloque()
     )
-    { return n; }
+    {
+        if (n != null) {
+            n.atributo(
+                "lineaFin",
+                String.valueOf(getToken(0).endLine)
+            );
+        }
+        return n;
+    }
+}
+
+Nodo comentario() :
+{
+    Token t;
+    Nodo n = new Nodo("comentario");
+}
+{
+    (
+        t=<COMENTARIO_LINEA>
+      |
+        t=<COMENTARIO_BLOQUE>
+    )
+    {
+        mostrarToken(t);
+
+        n.valor = t.image;
+
+        n.atributo(
+            "lineaInicio",
+            String.valueOf(t.beginLine)
+        );
+
+        return n;
+    }
+}
+
+// ------------------------------------------------------
+// DECLARACION DE FUNCIONES
+// ------------------------------------------------------
+String tipoFuncion() :
+{
+    Token t;
+    String tipo = "";
+}
+{
+    (
+          t=<VOID>    { mostrarToken(t); tipo = "void"; }
+        | t=<INT>     { mostrarToken(t); tipo = "int"; }
+        | t=<BOOL>    { mostrarToken(t); tipo = "bool"; }
+        | t=<BOOLEAN> { mostrarToken(t); tipo = "boolean"; }
+        | t=<STRING>  { mostrarToken(t); tipo = "string"; }
+        | t=<CHAR>    { mostrarToken(t); tipo = "char"; }
+        | t=<DOUBLE>  { mostrarToken(t); tipo = "double"; }
+        | t=<FLOAT>   { mostrarToken(t); tipo = "float"; }
+        | t=<LONG>    { mostrarToken(t); tipo = "long"; }
+        | t=<SHORT>   { mostrarToken(t); tipo = "short"; }
+        | t=<BYTE>    { mostrarToken(t); tipo = "byte"; }
+    )
+    {
+        return tipo;
+    }
+}
+
+String tipoParametro() :
+{
+    Token t;
+    String tipo = "";
+}
+{
+    (
+          t=<INT>     { mostrarToken(t); tipo = "int"; }
+        | t=<BOOL>    { mostrarToken(t); tipo = "bool"; }
+        | t=<BOOLEAN> { mostrarToken(t); tipo = "boolean"; }
+        | t=<STRING>  { mostrarToken(t); tipo = "string"; }
+        | t=<CHAR>    { mostrarToken(t); tipo = "char"; }
+        | t=<DOUBLE>  { mostrarToken(t); tipo = "double"; }
+        | t=<FLOAT>   { mostrarToken(t); tipo = "float"; }
+        | t=<LONG>    { mostrarToken(t); tipo = "long"; }
+        | t=<SHORT>   { mostrarToken(t); tipo = "short"; }
+        | t=<BYTE>    { mostrarToken(t); tipo = "byte"; }
+    )
+
+    [
+        t=<CORCHETE_IZQ> { mostrarToken(t); }
+        t=<CORCHETE_DER> { mostrarToken(t); }
+        { tipo = tipo + "[]"; }
+    ]
+
+    {
+        return tipo;
+    }
+}
+
+Nodo declaracionFuncion() :
+{
+    Token t;
+    String tipoRetorno;
+    String tipoDato;
+    String modificador = "ninguno";
+
+    Nodo n = new Nodo("funcion");
+    Nodo parametro;
+    Nodo cuerpo;
+}
+{
+    [
+        t=<STATIC>
+        {
+            mostrarToken(t);
+            modificador = "static";
+        }
+    ]
+
+    tipoRetorno=tipoFuncion()
+    {
+        n.atributo("tipoRetorno", tipoRetorno);
+        n.atributo("modificador", modificador);
+    }
+
+    t=<IDENTIFICADOR>
+    {
+        mostrarToken(t);
+        n.valor = t.image;
+    }
+
+    t=<PARENTESIS_IZQ>
+    {
+        mostrarToken(t);
+    }
+
+    [
+        parametro=parametroFuncion()
+        {
+            n.agregar(parametro);
+        }
+
+        (
+            t=<COMA>
+            {
+                mostrarToken(t);
+            }
+
+            parametro=parametroFuncion()
+            {
+                n.agregar(parametro);
+            }
+        )*
+    ]
+
+    t=<PARENTESIS_DER>
+    {
+        mostrarToken(t);
+    }
+
+    cuerpo=bloque()
+    {
+        n.agregar(cuerpo);
+        return n;
+    }
+}
+
+Nodo parametroFuncion() :
+{
+    Token t;
+    String tipoDato;
+    Nodo n = new Nodo("parametro");
+}
+{
+    tipoDato=tipoParametro()
+
+    t=<IDENTIFICADOR>
+    {
+        mostrarToken(t);
+        n.valor = t.image;
+        n.atributo("tipoDato", tipoDato);
+        return n;
+    }
+}
+
+// ------------------------------------------------------
+// LLAMADA A FUNCION COMO INSTRUCCION
+// ------------------------------------------------------
+Nodo llamadaFuncionInstruccion() :
+{
+    Token t;
+    Nodo n;
+}
+{
+    n=llamadaFuncion()
+
+    t=<PUNTO_Y_COMA> { mostrarToken(t); }
+
+    {
+        return n;
+    }
 }
 
 // ------------------------------------------------------
 // DECLARACION DE VARIABLES
 // ------------------------------------------------------
 Nodo declaracionVariable() :
-{ Token t; Nodo n = new Nodo("declaracionVariable"); Nodo exp = null; }
 {
-    { regla("declaracionVariable -> tipo identificador (asignacion expresion)? puntocoma"); }
+    Token t;
+    String tipoDato = "";
+    boolean esConstante = false;
+
+    Nodo lista = new Nodo("declaracionesMultiples");
+    Nodo variable;
+}
+{
+    { regla("declaracionVariable -> modificador tipo listaVariables puntocoma"); }
+
+    [
+        t=<CONST>
+        {
+            mostrarToken(t);
+            esConstante = true;
+        }
+    ]
+
     (
-          t=<INT>     { mostrarToken(t); n.atributo("tipoDato", "int"); }
-        | t=<BOOLEAN> { mostrarToken(t); n.atributo("tipoDato", "boolean"); }
-        | t=<STRING>  { mostrarToken(t); n.atributo("tipoDato", "string"); }
-        | t=<CHAR>    { mostrarToken(t); n.atributo("tipoDato", "char"); }
-        | t=<DOUBLE>  { mostrarToken(t); n.atributo("tipoDato", "double"); }
-        | t=<FLOAT>   { mostrarToken(t); n.atributo("tipoDato", "float"); }
-        | t=<LONG>    { mostrarToken(t); n.atributo("tipoDato", "long"); }
-        | t=<SHORT>   { mostrarToken(t); n.atributo("tipoDato", "short"); }
-        | t=<BYTE>    { mostrarToken(t); n.atributo("tipoDato", "byte"); }
+          t=<INT>     { mostrarToken(t); tipoDato = "int"; }
+        | t=<BOOL>    { mostrarToken(t); tipoDato = "bool"; }
+        | t=<BOOLEAN> { mostrarToken(t); tipoDato = "boolean"; }
+        | t=<STRING>  { mostrarToken(t); tipoDato = "string"; }
+        | t=<CHAR>    { mostrarToken(t); tipoDato = "char"; }
+        | t=<DOUBLE>  { mostrarToken(t); tipoDato = "double"; }
+        | t=<FLOAT>   { mostrarToken(t); tipoDato = "float"; }
+        | t=<LONG>    { mostrarToken(t); tipoDato = "long"; }
+        | t=<SHORT>   { mostrarToken(t); tipoDato = "short"; }
+        | t=<BYTE>    { mostrarToken(t); tipoDato = "byte"; }
     )
-    t=<IDENTIFICADOR> {
-        mostrarToken(t);
-        n.valor = t.image;
-        Semantico.declararVariable(t.image, n.atributoPorDefecto("tipoDato", "variable"));
+
+    [
+        t=<CORCHETE_IZQ> { mostrarToken(t); }
+        t=<CORCHETE_DER> { mostrarToken(t); }
+        { tipoDato = tipoDato + "[]"; }
+    ]
+
+    variable=declaracionVariableElemento(tipoDato, esConstante)
+    {
+        lista.agregar(variable);
     }
+
+    (
+        t=<COMA> { mostrarToken(t); }
+
+        variable=declaracionVariableElemento(tipoDato, esConstante)
+        {
+            lista.agregar(variable);
+        }
+    )*
+
+    t=<PUNTO_Y_COMA> { mostrarToken(t); }
+
+    { return lista; }
+}
+
+Nodo declaracionVariableElemento(String tipoDato, boolean esConstante) :
+{
+    Token t;
+    Nodo n = new Nodo("declaracionVariable");
+    Nodo exp;
+}
+{
+    t=<IDENTIFICADOR>
+    {
+        mostrarToken(t);
+
+        n.valor = t.image;
+        n.atributo("tipoDato", tipoDato);
+        n.atributo(
+            "constante",
+            esConstante ? "true" : "false"
+        );
+    }
+
     [
         t=<ASIGNACION> { mostrarToken(t); }
-        exp=expresion() { n.agregar(exp); }
+        exp=expresionLogica() { n.agregar(exp); }
     ]
-    t=<PUNTO_Y_COMA> { mostrarToken(t); return n; }
+
+    { return n; }
+}
+
+Nodo declaracionVariableFor() :
+{
+    Token t;
+    String tipoDato = "";
+    boolean esConstante = false;
+
+    Nodo lista = new Nodo("declaracionesMultiples");
+    Nodo variable;
+}
+{
+    [
+        t=<CONST>
+        {
+            mostrarToken(t);
+            esConstante = true;
+        }
+    ]
+
+    (
+          t=<INT>     { mostrarToken(t); tipoDato = "int"; }
+        | t=<BOOL>    { mostrarToken(t); tipoDato = "bool"; }
+        | t=<BOOLEAN> { mostrarToken(t); tipoDato = "boolean"; }
+        | t=<STRING>  { mostrarToken(t); tipoDato = "string"; }
+        | t=<CHAR>    { mostrarToken(t); tipoDato = "char"; }
+        | t=<DOUBLE>  { mostrarToken(t); tipoDato = "double"; }
+        | t=<FLOAT>   { mostrarToken(t); tipoDato = "float"; }
+        | t=<LONG>    { mostrarToken(t); tipoDato = "long"; }
+        | t=<SHORT>   { mostrarToken(t); tipoDato = "short"; }
+        | t=<BYTE>    { mostrarToken(t); tipoDato = "byte"; }
+    )
+
+    [
+        t=<CORCHETE_IZQ> { mostrarToken(t); }
+        t=<CORCHETE_DER> { mostrarToken(t); }
+        { tipoDato = tipoDato + "[]"; }
+    ]
+
+    variable=declaracionVariableElemento(tipoDato, esConstante)
+    {
+        lista.agregar(variable);
+    }
+
+    (
+        t=<COMA> { mostrarToken(t); }
+
+        variable=declaracionVariableElemento(tipoDato, esConstante)
+        {
+            lista.agregar(variable);
+        }
+    )*
+
+    { return lista; }
 }
 
 // ------------------------------------------------------
 // ASIGNACION
 // ------------------------------------------------------
 Nodo asignacion() :
-{ Token t; Nodo n = new Nodo("asignacion"); Nodo exp; }
 {
-    { regla("asignacion -> identificador asignacion expresion puntocoma"); }
-    t=<IDENTIFICADOR> { mostrarToken(t); n.valor = t.image; }
-    t=<ASIGNACION> { mostrarToken(t); }
-    exp=expresion() { n.agregar(exp); }
-    t=<PUNTO_Y_COMA> { mostrarToken(t); return n; }
+    Token t;
+    Nodo n = new Nodo("asignacion");
+    Nodo indice = null;
+    Nodo exp;
+}
+{
+    { regla("asignacion -> identificador indiceOpcional operador expresion puntocoma"); }
+
+    t=<IDENTIFICADOR>
+    {
+        mostrarToken(t);
+        n.valor = t.image;
+    }
+
+    [
+        t=<CORCHETE_IZQ> { mostrarToken(t); }
+        indice=expresion()
+        t=<CORCHETE_DER> { mostrarToken(t); }
+        {
+            n.atributo("asignacionArreglo", "true");
+            n.agregar(indice);
+        }
+    ]
+
+    (
+        t=<ASIGNACION>
+        {
+            mostrarToken(t);
+            n.atributo("operadorAsignacion", "=");
+        }
+      | t=<SUMA_ASIGNACION>
+        {
+            mostrarToken(t);
+            n.atributo("operadorAsignacion", "+=");
+        }
+      | t=<RESTA_ASIGNACION>
+        {
+            mostrarToken(t);
+            n.atributo("operadorAsignacion", "-=");
+        }
+      | t=<MULT_ASIGNACION>
+        {
+            mostrarToken(t);
+            n.atributo("operadorAsignacion", "*=");
+        }
+      | t=<DIV_ASIGNACION>
+        {
+            mostrarToken(t);
+            n.atributo("operadorAsignacion", "/=");
+        }
+      | t=<MOD_ASIGNACION>
+        {
+            mostrarToken(t);
+            n.atributo("operadorAsignacion", "%=");
+        }
+    )
+
+    exp=expresionLogica()
+    { n.agregar(exp); }
+
+    t=<PUNTO_Y_COMA> { mostrarToken(t); }
+
+    { return n; }
 }
 
 // ------------------------------------------------------
@@ -272,6 +844,123 @@ Nodo condicion() :
     { return n; }
 }
 
+ // ------------------------------------------------------
+ // EXCEPCIONES: TRY - CATCH - FINALLY
+ // ------------------------------------------------------
+Nodo manejoExcepciones() :
+{
+    Token t;
+    Nodo n = new Nodo("manejoExcepciones");
+    Nodo cuerpo;
+    Nodo captura;
+    boolean tieneCatch = false;
+    boolean tieneFinally = false;
+}
+{
+    t=<TRY> { mostrarToken(t); }
+
+    cuerpo=bloque() {
+        n.agregar(cuerpo);
+    }
+
+    (
+        captura=clausulaCatch() {
+            n.agregar(captura);
+            tieneCatch = true;
+        }
+    )*
+
+    [
+        t=<FINALLY> {
+            mostrarToken(t);
+            tieneFinally = true;
+            n.atributo("tieneFinally", "true");
+        }
+
+        cuerpo=bloque() {
+            n.agregar(cuerpo);
+        }
+    ]
+
+    {
+        if (!tieneCatch && !tieneFinally) {
+            throw new ParseException(
+                "Un bloque try debe tener catch o finally."
+            );
+        }
+
+        return n;
+    }
+}
+
+Nodo clausulaCatch() :
+{
+    Token t;
+    Nodo n = new Nodo("clausulaCatch");
+    Nodo cuerpo;
+    String tipoExcepcion = "";
+    String variableExcepcion = "";
+}
+{
+    t=<CATCH> { mostrarToken(t); }
+
+    [
+        t=<PARENTESIS_IZQ> { mostrarToken(t); }
+
+        t=<IDENTIFICADOR> {
+            mostrarToken(t);
+            tipoExcepcion = t.image;
+        }
+
+        [
+            t=<IDENTIFICADOR> {
+                mostrarToken(t);
+                variableExcepcion = t.image;
+            }
+        ]
+
+        t=<PARENTESIS_DER> { mostrarToken(t); }
+    ]
+
+    {
+        if (!tipoExcepcion.isEmpty()) {
+            n.atributo("tipoExcepcion", tipoExcepcion);
+        }
+
+        if (!variableExcepcion.isEmpty()) {
+            n.atributo("variableExcepcion", variableExcepcion);
+        }
+    }
+
+    cuerpo=bloque() {
+        n.agregar(cuerpo);
+        return n;
+    }
+}
+
+// ------------------------------------------------------
+// LANZAMIENTO DE EXCEPCIONES: THROW
+// ------------------------------------------------------
+Nodo throwInstruccion() :
+{
+    Token t;
+    Nodo n = new Nodo("throwInstruccion");
+    Nodo exp;
+}
+{
+    t=<THROW> { mostrarToken(t); }
+
+    [
+        exp=expresion() {
+            n.agregar(exp);
+        }
+    ]
+
+    t=<PUNTO_Y_COMA> { mostrarToken(t); }
+
+    { return n; }
+}
+
 // ------------------------------------------------------
 // WHILE
 // ------------------------------------------------------
@@ -306,21 +995,55 @@ Nodo cicloDoWhile() :
 // FOREACH
 // ------------------------------------------------------
 Nodo cicloForeach() :
-{ Token t; Nodo n = new Nodo("cicloForeach"); Nodo cuerpo; }
 {
-    { regla("cicloForeach -> foreach ( tipo identificador in coleccion ) bloque"); }
+    Token t;
+    Nodo n = new Nodo("cicloForeach");
+    Nodo cuerpo;
+    String tipoDato;
+}
+{
+    {
+        regla("cicloForeach -> foreach ( tipo identificador in coleccion ) bloque");
+    }
+
     t=<FOREACH> { mostrarToken(t); }
     t=<PARENTESIS_IZQ> { mostrarToken(t); }
+
     (
-          t=<INT>     { mostrarToken(t); n.atributo("tipoDato", "int"); }
-        | t=<STRING>  { mostrarToken(t); n.atributo("tipoDato", "string"); }
-        | t=<BOOLEAN> { mostrarToken(t); n.atributo("tipoDato", "boolean"); }
+          t=<INT>     { mostrarToken(t); tipoDato = "int"; }
+        | t=<BOOL>    { mostrarToken(t); tipoDato = "bool"; }
+        | t=<BOOLEAN> { mostrarToken(t); tipoDato = "boolean"; }
+        | t=<STRING>  { mostrarToken(t); tipoDato = "string"; }
+        | t=<CHAR>    { mostrarToken(t); tipoDato = "char"; }
+        | t=<DOUBLE>  { mostrarToken(t); tipoDato = "double"; }
+        | t=<FLOAT>   { mostrarToken(t); tipoDato = "float"; }
+        | t=<LONG>    { mostrarToken(t); tipoDato = "long"; }
+        | t=<SHORT>   { mostrarToken(t); tipoDato = "short"; }
+        | t=<BYTE>    { mostrarToken(t); tipoDato = "byte"; }
     )
-    t=<IDENTIFICADOR> { mostrarToken(t); n.valor = t.image; }
+
+    {
+        n.atributo("tipoDato", tipoDato);
+    }
+
+    t=<IDENTIFICADOR> {
+        mostrarToken(t);
+        n.valor = t.image;
+    }
+
     t=<IN> { mostrarToken(t); }
-    t=<IDENTIFICADOR> { mostrarToken(t); n.atributo("coleccion", t.image); }
+
+    t=<IDENTIFICADOR> {
+        mostrarToken(t);
+        n.atributo("coleccion", t.image);
+    }
+
     t=<PARENTESIS_DER> { mostrarToken(t); }
-    cuerpo=bloque() { n.agregar(cuerpo); return n; }
+
+    cuerpo=bloque() {
+        n.agregar(cuerpo);
+        return n;
+    }
 }
 
 // ------------------------------------------------------
@@ -393,32 +1116,86 @@ Nodo returnInstruccion() :
 // FOR
 // ------------------------------------------------------
 Nodo cicloPara() :
-{ Token t; Nodo n = new Nodo("cicloPara"); Nodo init, cond, upd, cuerpo; }
 {
-    { regla("cicloPara -> for ( asignacionSimple ; expresionLogica ; asignacionSimple ) bloque"); }
+    Token t;
+    Nodo n = new Nodo("cicloPara");
+    Nodo init, cond, upd, cuerpo;
+}
+{
+    { regla("cicloPara -> for ( inicializacion ; condicion ; actualizacion ) bloque"); }
+
     t=<FOR> { mostrarToken(t); }
     t=<PARENTESIS_IZQ> { mostrarToken(t); }
-    init=asignacionSimple() { n.agregar(init); }
+
+    (
+        LOOKAHEAD(<PUNTO_Y_COMA>)
+        { n.agregar(new Nodo("sinInicializacion")); }
+
+      |
+        LOOKAHEAD(2)
+        init=declaracionVariableFor() { n.agregar(init); }
+
+      |
+        init=asignacionSimple() { n.agregar(init); }
+    )
+
     t=<PUNTO_Y_COMA> { mostrarToken(t); }
+
     cond=expresionLogica() { n.agregar(cond); }
+
     t=<PUNTO_Y_COMA> { mostrarToken(t); }
+
     upd=asignacionSimple() { n.agregar(upd); }
+
     t=<PARENTESIS_DER> { mostrarToken(t); }
-    cuerpo=bloque() { n.agregar(cuerpo); return n; }
+
+    cuerpo=bloque() { n.agregar(cuerpo); }
+
+    { return n; }
 }
 
 Nodo asignacionSimple() :
 { Token t; Nodo n = new Nodo("asignacionSimple"); Nodo exp; }
 {
-    t=<IDENTIFICADOR> { mostrarToken(t); n.valor = t.image; }
+    t=<IDENTIFICADOR> {
+        mostrarToken(t);
+        n.valor = t.image;
+    }
 
     (
-        t=<ASIGNACION> {
-            mostrarToken(t);
-        }
+        (
+            t=<ASIGNACION> {
+                mostrarToken(t);
+                n.atributo("operadorAsignacion", "=");
+            }
+          |
+            t=<SUMA_ASIGNACION> {
+                mostrarToken(t);
+                n.atributo("operadorAsignacion", "+=");
+            }
+          |
+            t=<RESTA_ASIGNACION> {
+                mostrarToken(t);
+                n.atributo("operadorAsignacion", "-=");
+            }
+          |
+            t=<MULT_ASIGNACION> {
+                mostrarToken(t);
+                n.atributo("operadorAsignacion", "*=");
+            }
+          |
+            t=<DIV_ASIGNACION> {
+                mostrarToken(t);
+                n.atributo("operadorAsignacion", "/=");
+            }
+          |
+            t=<MOD_ASIGNACION> {
+                mostrarToken(t);
+                n.atributo("operadorAsignacion", "%=");
+            }
+        )
         exp=expresion() {
             n.agregar(exp);
-            n.atributo("operadorAsignacion", "=");
         }
 
       |
@@ -438,20 +1215,50 @@ Nodo asignacionSimple() :
 }
 
 // ------------------------------------------------------
-// PRINT
+// Escritura
 // ------------------------------------------------------
 Nodo escritura() :
-{ Token t; Nodo n = new Nodo("escritura"); Nodo exp; }
 {
-    { regla("escritura -> print ( expresion ) puntocoma"); }
+    Token t;
+    Nodo n = new Nodo("escritura");
+    Nodo exp;
+}
+{
+    t=<CONSOLE> { mostrarToken(t); }
+    t=<PUNTO> { mostrarToken(t); }
+
     (
-          t=<PRINT>   { mostrarToken(t); n.atributo("variante", "print"); }
-        | t=<PRINTLN> { mostrarToken(t); n.atributo("variante", "println"); }
+        (
+            t=<WRITELINE>
+            {
+                mostrarToken(t);
+                n.atributo("variante", "WriteLine");
+            }
+            t=<PARENTESIS_IZQ> { mostrarToken(t); }
+            exp=expresion() { n.agregar(exp); }
+            t=<PARENTESIS_DER> { mostrarToken(t); }
+        )
+      |
+        (
+            (
+                t=<READLINE>
+              |
+                t=<READKEY>
+            )
+            {
+                mostrarToken(t);
+                n = new Nodo("lecturaConsola");
+            }
+            t=<PARENTESIS_IZQ> { mostrarToken(t); }
+            t=<PARENTESIS_DER> { mostrarToken(t); }
+        )
     )
-    t=<PARENTESIS_IZQ> { mostrarToken(t); }
-    exp=expresion() { n.agregar(exp); }
-    t=<PARENTESIS_DER> { mostrarToken(t); }
-    t=<PUNTO_Y_COMA> { mostrarToken(t); return n; }
+
+    t=<PUNTO_Y_COMA> { mostrarToken(t); }
+
+    {
+        return n;
+    }
 }
 
 // ------------------------------------------------------
@@ -516,8 +1323,13 @@ Nodo expresionAnd() :
 }
 
 Nodo expresionNot() :
-{ Nodo n; Token t; Nodo resultado; }
 {
+    Nodo n;
+    Token t;
+    Nodo resultado;
+}
+{
+      // Negacion logica.
       t=<NOT_LOGICO> {
           mostrarToken(t);
       }
@@ -528,11 +1340,12 @@ Nodo expresionNot() :
           return resultado;
       }
 
-    | t=<PARENTESIS_IZQ> {
+    // Agrupacion logica.
+    | LOOKAHEAD( { parentesisContieneOperadorLogico() } )
+      t=<PARENTESIS_IZQ> {
           mostrarToken(t);
       }
-      n=expresionLogica() {
-      }
+      n=expresionLogica()
       t=<PARENTESIS_DER> {
           mostrarToken(t);
       }
@@ -542,6 +1355,7 @@ Nodo expresionNot() :
           return resultado;
       }
 
+    // Expresion aritmetica o relacional.
     | n=expresionRelacional() {
           return n;
       }
@@ -580,7 +1394,6 @@ String operadorRelacional() :
 // ------------------------------------------------------
 // EXPRESIONES ARITMETICAS
 // ------------------------------------------------------
-
 Nodo expresion() :
 { Nodo n; }
 {
@@ -644,24 +1457,590 @@ Nodo expresionUnaria() :
       }
 }
 
-Nodo expresionPrimaria() :
-{ Nodo n; Token t; }
+Nodo llamadaFuncion() :
+{ 
+    Token t;
+    Nodo n = new Nodo("llamadaFuncion");
+    Nodo argumento;
+}
 {
-      n=valor()
-      { return n; }
+    t=<IDENTIFICADOR> {
+        mostrarToken(t);
+        n.valor = t.image;
+    }
 
-    | t=<PARENTESIS_IZQ> {
+    t=<PARENTESIS_IZQ> { mostrarToken(t); }
+
+    [
+        argumento=expresion() {
+            n.agregar(argumento);
+        }
+
+        (
+            t=<COMA> { mostrarToken(t); }
+            argumento=expresion() {
+                n.agregar(argumento);
+            }
+        )*
+    ]
+
+    t=<PARENTESIS_DER> { mostrarToken(t); }
+
+    { return n; }
+}
+
+Nodo conversionParse() :
+{
+    Token t;
+    String tipo;
+    Nodo n = new Nodo("conversionTipo");
+    Nodo argumento;
+}
+{
+    (
+        t=<INT> {
+            mostrarToken(t);
+            tipo = "int";
+        }
+      |
+        t=<LONG> {
+            mostrarToken(t);
+            tipo = "long";
+        }
+      |
+        t=<SHORT> {
+            mostrarToken(t);
+            tipo = "short";
+        }
+      |
+        t=<BYTE> {
+            mostrarToken(t);
+            tipo = "byte";
+        }
+      |
+        t=<FLOAT> {
+            mostrarToken(t);
+            tipo = "float";
+        }
+      |
+        t=<DOUBLE> {
+            mostrarToken(t);
+            tipo = "double";
+        }
+      |
+        t=<BOOL> {
+            mostrarToken(t);
+            tipo = "bool";
+        }
+      |
+        t=<BOOLEAN> {
+            mostrarToken(t);
+            tipo = "bool";
+        }
+      |
+        t=<CHAR> {
+            mostrarToken(t);
+            tipo = "char";
+        }
+    )
+
+    t=<PUNTO> {
+        mostrarToken(t);
+    }
+
+    t=<IDENTIFICADOR> {
+        mostrarToken(t);
+
+        if (!"Parse".equals(t.image)) {
+            throw new ParseException(
+                "Solo se admite Parse para esta conversion."
+            );
+        }
+
+        n.atributo("tipo", tipo);
+        n.atributo("origen", "Parse");
+    }
+
+    t=<PARENTESIS_IZQ> {
+        mostrarToken(t);
+    }
+
+    argumento=expresion() {
+        n.agregar(argumento);
+    }
+
+    t=<PARENTESIS_DER> {
+        mostrarToken(t);
+    }
+
+    {
+        return n;
+    }
+}
+
+Nodo conversionConvert() :
+{
+    Token t;
+    String tipo;
+    String metodo;
+    Nodo n = new Nodo("conversionTipo");
+    Nodo argumento;
+}
+{
+    t=<IDENTIFICADOR> {
+        mostrarToken(t);
+
+        if (!"Convert".equals(t.image)) {
+            throw new ParseException(
+                "Se esperaba Convert."
+            );
+        }
+    }
+
+    t=<PUNTO> {
+        mostrarToken(t);
+    }
+
+    t=<IDENTIFICADOR> {
+        mostrarToken(t);
+
+        metodo = t.image;
+
+        if ("ToByte".equals(metodo)) {
+            tipo = "byte";
+
+        } else if ("ToInt16".equals(metodo)) {
+            tipo = "short";
+
+        } else if ("ToInt32".equals(metodo)) {
+            tipo = "int";
+
+        } else if ("ToInt64".equals(metodo)) {
+            tipo = "long";
+
+        } else if ("ToSingle".equals(metodo)) {
+            tipo = "float";
+
+        } else if ("ToDouble".equals(metodo)) {
+            tipo = "double";
+
+        } else if ("ToBoolean".equals(metodo)) {
+            tipo = "bool";
+
+        } else if ("ToChar".equals(metodo)) {
+            tipo = "char";
+
+        } else if ("ToString".equals(metodo)) {
+            tipo = "string";
+
+        } else {
+            throw new ParseException(
+                "Conversion no soportada: " + metodo
+            );
+        }
+
+        n.atributo("tipo", tipo);
+        n.atributo("origen", "Convert");
+        n.atributo("metodo", metodo);
+    }
+
+    t=<PARENTESIS_IZQ> {
+        mostrarToken(t);
+    }
+
+    argumento=expresion() {
+        n.agregar(argumento);
+    }
+
+    t=<PARENTESIS_DER> {
+        mostrarToken(t);
+    }
+
+    {
+        return n;
+    }
+}
+
+Nodo nuevoArreglo() :
+{
+    Token t;
+    Nodo n;
+}
+{
+    t=<NEW> { mostrarToken(t); }
+
+    (
+          t=<INT>     { mostrarToken(t); }
+        | t=<BOOL>    { mostrarToken(t); }
+        | t=<BOOLEAN> { mostrarToken(t); }
+        | t=<STRING>  { mostrarToken(t); }
+        | t=<CHAR>    { mostrarToken(t); }
+        | t=<DOUBLE>  { mostrarToken(t); }
+        | t=<FLOAT>   { mostrarToken(t); }
+        | t=<LONG>    { mostrarToken(t); }
+        | t=<SHORT>   { mostrarToken(t); }
+        | t=<BYTE>    { mostrarToken(t); }
+    )
+
+    t=<CORCHETE_IZQ> { mostrarToken(t); }
+    t=<CORCHETE_DER> { mostrarToken(t); }
+
+    n=inicializadorArreglo()
+
+    {
+        return n;
+    }
+}
+
+Nodo inicializadorArreglo() :
+{
+    Token t;
+    Nodo n = new Nodo("arreglo");
+    Nodo elemento;
+}
+{
+    t=<LLAVE_IZQ> { mostrarToken(t); }
+
+    [
+        elemento=expresion() {
+            n.agregar(elemento);
+        }
+
+        (
+            t=<COMA> { mostrarToken(t); }
+
+            elemento=expresion() {
+                n.agregar(elemento);
+            }
+        )*
+    ]
+
+    t=<LLAVE_DER> { mostrarToken(t); }
+
+    { return n; }
+}
+
+Nodo operacionArreglo() :
+{
+    Token t;
+    String operacion;
+    Nodo n = new Nodo("operacionArreglo");
+}
+{
+    t=<IDENTIFICADOR>
+    {
+        mostrarToken(t);
+        if (!"Array".equals(t.image)) {
+            throw new ParseException(
+                "Se esperaba Array para una operacion de arreglo."
+            );
+        }
+    }
+
+    t=<PUNTO> { mostrarToken(t); }
+
+    t=<IDENTIFICADOR>
+    {
+        mostrarToken(t);
+        operacion = t.image;
+
+        if (!"Sort".equals(operacion)
+                && !"Reverse".equals(operacion)) {
+            throw new ParseException(
+                "Operacion de arreglo no soportada: " + operacion
+            );
+        }
+
+        n.atributo("operacion", operacion);
+    }
+
+    t=<PARENTESIS_IZQ> { mostrarToken(t); }
+
+    t=<IDENTIFICADOR>
+    {
+        mostrarToken(t);
+        n.valor = t.image;
+    }
+
+    t=<PARENTESIS_DER> { mostrarToken(t); }
+
+    t=<PUNTO_Y_COMA> { mostrarToken(t); }
+
+    { return n; }
+}
+
+Nodo busquedaIndiceArreglo() :
+{
+    Token t;
+    Nodo n = new Nodo("busquedaIndiceArreglo");
+    Nodo elemento;
+}
+{
+    t=<IDENTIFICADOR>
+    {
+        mostrarToken(t);
+        if (!"Array".equals(t.image)) {
+            throw new ParseException("Se esperaba Array.");
+        }
+    }
+
+    t=<PUNTO> { mostrarToken(t); }
+
+    t=<IDENTIFICADOR>
+    {
+        mostrarToken(t);
+        if (!"IndexOf".equals(t.image)) {
+            throw new ParseException(
+                "Se esperaba Array.IndexOf."
+            );
+        }
+    }
+
+    t=<PARENTESIS_IZQ> { mostrarToken(t); }
+
+    t=<IDENTIFICADOR>
+    {
+        mostrarToken(t);
+        n.valor = t.image;
+    }
+
+    t=<COMA> { mostrarToken(t); }
+
+    elemento=expresion()
+    {
+        n.agregar(elemento);
+    }
+
+    t=<PARENTESIS_DER> { mostrarToken(t); }
+
+    { return n; }
+}
+
+Nodo copiarArreglo() :
+{
+    Token t;
+    Nodo n = new Nodo("copiarArreglo");
+    Nodo cantidad;
+}
+{
+    t=<IDENTIFICADOR>
+    {
+        mostrarToken(t);
+        if (!"Array".equals(t.image)) {
+            throw new ParseException("Se esperaba Array.");
+        }
+    }
+
+    t=<PUNTO> { mostrarToken(t); }
+
+    t=<IDENTIFICADOR>
+    {
+        mostrarToken(t);
+        if (!"Copy".equals(t.image)) {
+            throw new ParseException(
+                "Se esperaba Array.Copy."
+            );
+        }
+    }
+
+    t=<PARENTESIS_IZQ> { mostrarToken(t); }
+
+    t=<IDENTIFICADOR>
+    {
+        mostrarToken(t);
+        n.atributo("origen", t.image);
+    }
+
+    t=<COMA> { mostrarToken(t); }
+
+    t=<IDENTIFICADOR>
+    {
+        mostrarToken(t);
+        n.atributo("destino", t.image);
+    }
+
+    t=<COMA> { mostrarToken(t); }
+
+    cantidad=expresion()
+    {
+        n.agregar(cantidad);
+    }
+
+    t=<PARENTESIS_DER> { mostrarToken(t); }
+    t=<PUNTO_Y_COMA> { mostrarToken(t); }
+
+    { return n; }
+}
+
+Nodo nuevaExcepcion() :
+{
+    Token t;
+    Nodo n = new Nodo("nuevaExcepcion");
+    Nodo argumento;
+}
+{
+    t=<NEW> { mostrarToken(t); }
+    t=<IDENTIFICADOR> {
+        mostrarToken(t);
+        n.atributo("tipo", t.image);
+    }
+    t=<PARENTESIS_IZQ> { mostrarToken(t); }
+    [
+        argumento=expresion() {
+            n.agregar(argumento);
+        }
+        (
+            t=<COMA> { mostrarToken(t); }
+            argumento=expresion() {
+                n.agregar(argumento);
+            }
+        )*
+    ]
+    t=<PARENTESIS_DER> { mostrarToken(t); }
+    {
+        return n;
+    }
+}
+
+Nodo expresionPrimaria() :
+{
+    Nodo n;
+    Token t;
+}
+{
+    LOOKAHEAD({
+        getToken(1).image.equals("Array")
+        && getToken(2).kind == PUNTO
+        && getToken(3).image.equals("IndexOf")
+        && getToken(4).kind == PARENTESIS_IZQ
+    })
+    n=busquedaIndiceArreglo()
+    {
+        return n;
+    }
+
+    | LOOKAHEAD({
+        (
+            getToken(1).kind == INT
+            || getToken(1).kind == LONG
+            || getToken(1).kind == SHORT
+            || getToken(1).kind == BYTE
+            || getToken(1).kind == FLOAT
+            || getToken(1).kind == DOUBLE
+            || getToken(1).kind == BOOL
+            || getToken(1).kind == BOOLEAN
+            || getToken(1).kind == CHAR
+        )
+        && getToken(2).kind == PUNTO
+        && getToken(3).kind == IDENTIFICADOR
+        && "Parse".equals(getToken(3).image)
+        && getToken(4).kind == PARENTESIS_IZQ
+    })
+    n=conversionParse()
+    {
+        return n;
+    }
+
+    | LOOKAHEAD({
+        "Convert".equals(getToken(1).image)
+        && getToken(2).kind == PUNTO
+        && (
+            "ToByte".equals(getToken(3).image)
+            || "ToInt16".equals(getToken(3).image)
+            || "ToInt32".equals(getToken(3).image)
+            || "ToInt64".equals(getToken(3).image)
+            || "ToSingle".equals(getToken(3).image)
+            || "ToDouble".equals(getToken(3).image)
+            || "ToBoolean".equals(getToken(3).image)
+            || "ToChar".equals(getToken(3).image)
+            || "ToString".equals(getToken(3).image)
+        )
+        && getToken(4).kind == PARENTESIS_IZQ
+    })
+    n=conversionConvert()
+    {
+        return n;
+    }
+
+    | LOOKAHEAD(2)
+    n=llamadaFuncion()
+    {
+        return n;
+    }
+
+    | t=<CONSOLE> {
           mostrarToken(t);
       }
-      n=expresion() {
+      t=<PUNTO> {
+          mostrarToken(t);
+      }
+      t=<READLINE> {
+          mostrarToken(t);
+      }
+      t=<PARENTESIS_IZQ> {
+          mostrarToken(t);
       }
       t=<PARENTESIS_DER> {
           mostrarToken(t);
       }
       {
-          Nodo resultado = new Nodo("agrupacion");
-          resultado.agregar(n);
-          return resultado;
+          return new Nodo("lecturaConsola");
+      }
+
+    | LOOKAHEAD(<NEW> <IDENTIFICADOR> <PARENTESIS_IZQ>)
+      n=nuevaExcepcion()
+      {
+          return n;
+      }
+
+    | n=nuevoArreglo()
+      {
+          return n;
+      }
+
+    | n=inicializadorArreglo()
+      {
+          return n;
+      }
+
+    | n=valor()
+      {
+          return n;
+      }
+
+    | t=<PARENTESIS_IZQ> {
+          mostrarToken(t);
+      }
+      n=expresion()
+      t=<PARENTESIS_DER> {
+          mostrarToken(t);
+      }
+      {
+          Nodo agrupada = new Nodo("agrupacion");
+          agrupada.agregar(n);
+          n = agrupada;
+      }
+      [
+          t=<PUNTO> {
+              mostrarToken(t);
+          }
+          t=<IDENTIFICADOR> {
+              mostrarToken(t);
+
+              if ("Length".equals(t.image)) {
+                  Nodo propiedad = new Nodo("propiedadArreglo");
+                  propiedad.agregar(n);
+                  n = propiedad;
+              } else {
+                  throw new ParseException(
+                      "Propiedad no admitida en esta version: "
+                      + t.image
+                  );
+              }
+          }
+      ]
+      {
+          return n;
       }
 }
 
@@ -691,13 +2070,132 @@ String operadorAritmetico() :
 }
 
 Nodo valor() :
-{ Token t; Nodo n; }
 {
-      t=<IDENTIFICADOR> { mostrarToken(t); n = new Nodo("valor", t.image); n.atributo("tipoValor", "identificador"); return n; }
-    | t=<NUMERO>         { mostrarToken(t); n = new Nodo("valor", t.image); n.atributo("tipoValor", "numero"); return n; }
-    | t=<DECIMAL>        { mostrarToken(t); n = new Nodo("valor", t.image); n.atributo("tipoValor", "decimal"); return n; }
-    | t=<CADENA>         { mostrarToken(t); n = new Nodo("valor", t.image); n.atributo("tipoValor", "cadena"); return n; }
-    | t=<TRUE>           { mostrarToken(t); n = new Nodo("valor", t.image); n.atributo("tipoValor", "true"); return n; }
-    | t=<FALSE>          { mostrarToken(t); n = new Nodo("valor", t.image); n.atributo("tipoValor", "false"); return n; }
-    | t=<NULL>           { mostrarToken(t); n = new Nodo("valor", t.image); n.atributo("tipoValor", "null"); return n; }
+    Token t;
+    Nodo n;
+    Nodo indice;
+}
+{
+    t = <IDENTIFICADOR>
+    {
+        mostrarToken(t);
+        n = new Nodo("valor", t.image);
+        n.atributo("tipoValor", "identificador");
+    }
+    [
+        t = <CORCHETE_IZQ>
+        {
+            mostrarToken(t);
+        }
+        indice = expresion()
+        t = <CORCHETE_DER>
+        {
+            mostrarToken(t);
+        }
+        {
+            Nodo acceso = new Nodo("accesoArreglo", n.valor);
+            acceso.agregar(indice);
+            n = acceso;
+        }
+
+        |
+
+        t = <PUNTO>
+        {
+            mostrarToken(t);
+        }
+        t = <IDENTIFICADOR>
+        {
+            mostrarToken(t);
+
+            if ("Length".equals(t.image)) {
+                n = new Nodo("propiedadArreglo", n.valor);
+
+            } else if ("Message".equals(t.image)) {
+                n = new Nodo("propiedadExcepcion", n.valor);
+
+            } else {
+                throw new ParseException(
+                    "Propiedad no admitida en esta version: "
+                    + t.image
+                );
+            }
+        }
+    ]
+    {
+        return n;
+    }
+
+    |
+
+    t = <NUMERO>
+    {
+        mostrarToken(t);
+        n = new Nodo("valor", t.image);
+        n.atributo("tipoValor", "numero");
+        return n;
+    }
+
+    |
+
+    t = <DECIMAL>
+    {
+        mostrarToken(t);
+
+        String numero = t.image.replaceAll("[fFdD]$", "");
+
+        n = new Nodo("valor", numero);
+        n.atributo("tipoValor", "decimal");
+        return n;
+    }
+
+    |
+
+    t = <CARACTER>
+    {
+        mostrarToken(t);
+        n = new Nodo("valor", t.image);
+        n.atributo("tipoValor", "caracter");
+        return n;
+    }
+
+    |
+
+    t = <CADENA>
+    {
+        mostrarToken(t);
+        n = new Nodo("valor", t.image);
+        n.atributo("tipoValor", "cadena");
+        return n;
+    }
+
+    |
+
+    t = <TRUE>
+    {
+        mostrarToken(t);
+        n = new Nodo("valor", t.image);
+        n.atributo("tipoValor", "true");
+        return n;
+    }
+
+    |
+
+    t = <FALSE>
+    {
+        mostrarToken(t);
+        n = new Nodo("valor", t.image);
+        n.atributo("tipoValor", "false");
+        return n;
+    }
+
+    |
+
+    t = <NULL>
+    {
+        mostrarToken(t);
+        n = new Nodo("valor", t.image);
+        n.atributo("tipoValor", "null");
+        return n;
+    }
 }

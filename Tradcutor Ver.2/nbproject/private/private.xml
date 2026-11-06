@@ -5,9 +5,12 @@
         <group>
             <file>file:/C:/Users/kainn/Documents/NetBeansProjects/Traductor/src/traductor/Traductor.jj</file>
             <file>file:/C:/Users/kainn/Documents/NetBeansProjects/Traductor/src/traductor/GeneradorPython.java</file>
+            <file>file:/C:/Users/kainn/Documents/NetBeansProjects/Traductor/src/traductor/Semantico.java</file>
             <file>file:/C:/Users/kainn/Documents/NetBeansProjects/Traductor/prueba.cs</file>
-            <file>file:/C:/Users/kainn/Documents/NetBeansProjects/Traductor/error.cs</file>
-            <file>file:/C:/Users/kainn/Documents/NetBeansProjects/Traductor/src/traductor/GeneradorJavaScript.java</file>
+            <file>file:/C:/Users/kainn/Documents/NetBeansProjects/Traductor/src/traductor/Main.java</file>
+            <file>file:/C:/Users/kainn/Documents/NetBeansProjects/Traductor/src/traductor/Traductor.java</file>
+            <file>file:/C:/Users/kainn/Documents/NetBeansProjects/Traductor/palabras.csv</file>
+            <file>file:/C:/Users/kainn/Documents/NetBeansProjects/Traductor/src/traductor/Diccionario.java</file>
         </group>
     </open-files>
 </project-private>

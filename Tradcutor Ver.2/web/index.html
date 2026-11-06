@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="oscuro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Traductor C# → Python</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="componentes.css">
+  <link rel="stylesheet" href="print.css" media="print">
+  <script src="js/api.js" defer></script>
+  <script src="js/historial.js" defer></script>
+  <script src="js/ui.js" defer></script>
+  <script src="js/panel.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <div id="app">
+
+    <aside id="menu">
+      <div id="logo">C# → PY <small>Traductor de código</small></div>
+      <nav>
+        <button data-ir="inicio">Inicio</button>
+        <button data-ir="traducir">Traducir</button>
+        <button data-ir="analisis">Análisis</button>
+        <button data-ir="historial">Historial</button>
+        <button data-ir="creditos">Creditos</button>
+      </nav>
+    </aside>
+
+    <div id="contenido">
+      <header id="cabecera">
+        <div>
+          <h1 id="saludo-titulo"></h1>
+          <p id="saludo-texto"></p>
+        </div>
+        <button id="btn-tema" title="Cambiar tema">Tema</button>
+      </header>
+
+      <main>
+        <!-- INICIO -->
+        <section class="vista" data-vista="inicio">
+          <div id="tarjetas">
+            <article><h3>Total traducidos</h3><p id="stat-total">0</p></article>
+            <article><h3>Archivos procesados</h3><p id="stat-archivos">0</p></article>
+            <article><h3>Historial</h3><p id="stat-historial">0</p></article>
+            <article><h3>Errores detectados</h3><p id="stat-errores">0</p></article>
+          </div>
+          <div id="inicio-grid">
+            <div class="caja" id="caja-donut">
+              <h2>Exito y errores</h2>
+              <div id="donut"></div>
+              <ul class="leyenda">
+                <li data-tipo="ok">Completas<b id="leg-ok">0</b></li>
+                <li data-tipo="error">Con errores<b id="leg-error">0</b></li>
+              </ul>
+            </div>
+
+            <div class="caja" id="caja-ultima">
+              <h2>Ultima traduccion</h2>
+              <div id="ultima-traduccion"></div>
+              <div class="acciones-caja">
+                <button data-ir="analisis">Ver análisis</button>
+                <button data-ir="traducir">Ir a traducir</button>
+              </div>
+          </div>
+
+          <div clas="caja" id="caja-recientes">
+            <div class="encabezado-caja">
+              <h2>Traducciones recientes</h2>
+              <button data-ir="historial">Ver todo</button>
+            </div>
+            <p id="recientes-vacio">Aún no hay traducciones.</p>
+            <table>
+              <thead><tr><th>Archivo</th><th>Fecha</th><th>Estado</th><th>Tiempo</th></tr></thead>
+              <tbody id="tabla-recientes"></tbody>
+            </table>
+          </div>
+        </section>
+
+         <!-- TRADUCIR -->
+        <section class="vista" data-vista="traducir">
+          <div id="editores">
+            <div>
+              <h2>Código fuente (C#)</h2>
+              <div class="caja-codigo">
+                <div class="numeros" id="numeros-cs" aria-hidden="true"></div>
+                <textarea id="codigo-cs" spellcheck="false" wrap="off"></textarea>
+              </div>
+              <small id="contador-cs"></small>
+            </div>
+            <div>
+              <h2>Código traducido (Python)</h2>
+              <div class="caja-codigo">
+                <div class="numeros" id="numeros-py" aria-hidden="true"></div>
+                <pre id="salida-py"></pre>
+              </div>
+              <small>Tiempo: <span id="tiempo">—</span></small>
+            </div>
+          </div>
+
+          <div id="acciones">
+            <button id="btn-traducir">Traducir</button>
+            <button id="btn-limpiar">Limpiar</button>
+            <button id="btn-copiar">Copiar Python</button>
+            <button id="btn-descargar">Descargar .py</button>
+            <button id="btn-reporte" disabled>Generar reporte</button>
+            <label>Cargar archivo (.cs o .txt) <input type="file" id="archivo-cs" accept=".cs,.txt"></label>
+          </div>
+
+          <div id="checklist">
+            <h2>Análisis del código</h2>
+            <ul>
+              <li>Léxico <span id="estado-lexico" data-estado="pendiente">—</span></li>
+              <li>Sintáctico <span id="estado-sintactico" data-estado="pendiente">—</span></li>
+              <li>Semántico <span id="estado-semantico" data-estado="pendiente">—</span></li>
+            </ul>
+            <button data-ir="analisis">Ver análisis completo</button>
+          </div>
+
+          <div id="errores">
+            <h2>Errores</h2>
+            <ul id="lista-errores"></ul>
+          </div>
+        </section>
+
+        <!-- ANÁLISIS -->
+        <section class="vista" data-vista="analisis">
+          <div id="tabs-analisis" role="tablist">
+            <button data-tab="lexico" data-activo="true">Léxico</button>
+            <button data-tab="sintactico" data-activo="false">Sintáctico</button>
+            <button data-tab="semantico" data-activo="false">Semántico</button>
+          </div>
+
+          <!-- LÉXICO -->
+          <div class="panel-analisis" data-panel="lexico">
+            <div class="encabezado-panel">
+              <h2>Resultado del análisis léxico</h2>
+              <span class="pildora" id="pildora-lexico" data-estado="pendiente">No evaluado</span>
+            </div>
+            <div class="resumen-tarjetas">
+              <article><h3>Tokens encontrados</h3><p id="total-tokens">0</p></article>
+              <article><h3>Errores léxicos</h3><p id="num-err-lexico">0</p></article>
+              <article><h3>Tiempo de análisis</h3><p id="tiempo-analisis">—</p></article>
+            </div>
+            <p class="mensaje-etapa" id="msg-lexico"></p>
+            <ul class="errores-panel" id="err-lexico"></ul>
+            <div class="dos-columnas">
+              <div class="caja">
+                <h3>Tokens principales</h3>
+                <div class="barras" id="barras-tokens"></div>
+              </div>
+              <div class="caja">
+                <h3>Vista de tokens</h3>
+                <div class="scroll-tabla">
+                  <table>
+                    <thead><tr><th>Token</th><th>Lexema</th><th>Clasificación</th><th>Función</th></tr></thead>
+                    <tbody id="tabla-tokens"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SINTÁCTICO -->
+          <div class="panel-analisis" data-panel="sintactico" hidden>
+            <div class="encabezado-panel">
+              <h2>Resultado del análisis sintáctico</h2>
+              <span class="pildora" id="pildora-sintactico" data-estado="pendiente">No evaluado</span>
+            </div>
+            <div class="resumen-tarjetas">
+              <article><h3>Reglas aplicadas</h3><p id="num-reglas">0</p></article>
+              <article><h3>Reglas distintas</h3><p id="num-reglas-distintas">0</p></article>
+              <article><h3>Errores sintácticos</h3><p id="num-err-sintactico">0</p></article>
+            </div>
+            <p class="mensaje-etapa" id="msg-sintactico"></p>
+            <ul class="errores-panel" id="err-sintactico"></ul>
+            <div class="dos-columnas">
+              <div class="caja">
+                <h3>Reglas más usadas</h3>
+                <div class="barras" id="barras-reglas"></div>
+              </div>
+              <div class="caja">
+                <h3>Reglas aplicadas</h3>
+                <div class="scroll-tabla">
+                  <ol id="lista-reglas"></ol>
+                </div>
+              </div>
+            </div>
+          </div>
+
+            <!-- SEMÁNTICO -->
+            <div class="panel-analisis" data-panel="semantico" hidden>
+              <div class="encabezado-panel">
+                <h2>Resultado del análisis semántico</h2>
+                <span class="pildora" id="pildora-semantico" data-estado="pendiente">No evaluado</span>
+              </div>
+              <div class="resumen-tarjetas">
+                <article><h3>Errores semánticos</h3><p id="num-err-semantico">0</p></article>
+                <article><h3>Errores en total</h3><p id="num-err-total">0</p></article>
+                <article><h3>Tiempo de análisis</h3><p id="tiempo-analisis-2">—</p></article>
+              </div>
+              <p class="mensaje-etapa" id="msg-semantico"></p>
+              <ul class="errores-panel" id="err-semantico"></ul>
+            </div>
+        </section>
+
+        <!-- HISTORIAL -->
+        <section class="vista" data-vista="historial">
+          <h2>Historial de traducciones</h2>
+          <p id="historial-vacio">Aún no hay traducciones.</p>
+          <table>
+            <thead><tr><th>Archivo</th><th>Fecha</th><th>Estado</th><th>Tiempo</th></tr></thead>
+            <tbody id="tabla-historial"></tbody>
+          </table>
+          <button id="btn-borrar-historial">Borrar historial</button>
+        </section>
+        <!-- CREDITOS -->
+        <section class="vista" data-vista="creditos">
+          <div id="equipo">
+            <article class="persona">
+              <div class="avatar">DM</div>
+              <h3>Dafne Jael Moguel Benitez</h3>
+              <p class="rol">Interfaz web y conexion con el sevidor</p>
+              <p class="control">No. de control: 22211616</p>
+              <div class="enlaces">
+                <a href="mailto:l22211616@tectijuana.edu.mx">Correo</a>
+              </div>
+            </article>
+            <article class="persona">
+              <div class="avatar">KN</div>
+              <h3>Kain Alejandro Novelo Astorga</h3>
+              <p class="rol">Gramática y análisis del traductor</p>
+              <p class="control">No. de control: 22211623</p>
+              <div class="enlaces">
+                <a href="mailto:l22211623@tectijuana.edu.mx">Correo</a>
+              </div>
+            </article>
+          </div>
+
+          <div class="caja" id="datos-proyecto">
+            <h2>Sobre el proyecto</h2>
+            <dl>
+              <dt>Materia</dt><dd>Lenguajes y Autómatas 2 · Serie SC7C</dd>
+              <dt>Docente</dt><dd>Luis Alfonso Gaxiola Vega</dd>
+              <dt>Institución</dt><dd>Instituto Tecnológico de Tijuana · Departamento de Sistemas y Computación</dd>
+              <dt>Semestre</dt><dd>Agosto – Diciembre 2026</dd>
+              <dt>Proyecto</dt><dd>Traductor de codigo</dd>
+            </dl>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <section id="reporte">
+    <header>
+      <h1>Reporte de análisis</h1>
+      <p id="rep-subtitulo"></p>
+    </header>
+
+    <h2>Resumen</h2>
+    <table><tbody id="rep-resumen"></tbody></table>
+
+    <h2>Etapas del análisis</h2>
+    <ul id="rep-etapas"></ul>
+
+    <h2>Errores</h2>
+    <ul id="rep-errores"></ul>
+
+    <h2>Resumen de tokens</h2>
+    <table>
+      <thead><tr><th>Clasificación</th><th>Cantidad</th></tr></thead>
+      <tbody id="rep-tokens-resumen"></tbody>
+    </table>
+
+    <h2>Primeros tokens</h2>
+    <table>
+      <thead><tr><th>Token</th><th>Lexema</th><th>Clasificación</th><th>Función</th></tr></thead>
+      <tbody id="rep-tokens"></tbody>
+    </table>
+
+    <h2>Reglas aplicadas</h2>
+    <ol id="rep-reglas"></ol>
+
+    <h2>Código fuente (C#)</h2>
+    <pre id="rep-codigo-fuente"></pre>
+
+    <h2>Código traducido (Python)</h2>
+    <pre id="rep-codigo-salida"></pre>
+  </section>
+</body>
+</html>

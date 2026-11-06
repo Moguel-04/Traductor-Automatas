@@ -1,0 +1,55 @@
+/* ==========================================================
+   Reporte en PDF
+   ========================================================== */
+@page { size: A4; margin: 16mm 14mm; }
+
+html, body { background: #fff !important; }
+body { color: #111; font-size: 11pt; }
+
+#app { display: none !important; }
+#reporte { display: block !important; }
+
+#reporte {
+  --texto: #111;
+  --texto-suave: #555;
+  --borde: #b8c4cc;
+  --panel: #fff;
+  --panel-fuerte: #eef3f6;
+  --codigo-fondo: #f6f8fa;
+  --codigo-texto: #111;
+  --enlace: #075985;
+  color: #111;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+#reporte header { border-bottom: 3px solid #10b981; margin-bottom: 14pt; padding-bottom: 8pt; }
+#reporte h1 { font-size: 22pt; margin: 0; color: #064e3b; }
+#reporte header p { margin: 4pt 0 0; color: #555; }
+#reporte h2 {
+  font-size: 13pt; margin: 18pt 0 6pt; color: #0c4a6e;
+  border-bottom: 1px solid #b8c4cc; padding-bottom: 3pt;
+  break-after: avoid;
+}
+
+#reporte table { width: 100%; border-collapse: collapse; border: 1px solid #b8c4cc; border-radius: 0; background: #fff; }
+#reporte th, #reporte td { padding: 5pt 8pt; border: 1px solid #b8c4cc; font-size: 10pt; text-align: left; color: #111; }
+#reporte th { background: #eef3f6 !important; color: #333; font-size: 9pt; text-transform: uppercase; letter-spacing: 0.04em; }
+#reporte tr { break-inside: avoid; }
+#reporte #rep-resumen td:first-child { width: 35%; font-weight: 600; background: #f6f9fb; }
+
+#reporte ul, #reporte ol { margin: 0; padding-left: 20pt; line-height: 1.6; font-size: 10.5pt; }
+
+#reporte pre {
+  margin: 0; padding: 8pt;
+  border: 1px solid #b8c4cc;
+  background: #f6f8fa !important;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 8.5pt; line-height: 1.45;
+  white-space: pre-wrap;      
+  word-break: break-word;
+}
+
+#reporte th, #reporte pre, #reporte #rep-resumen td:first-child {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}

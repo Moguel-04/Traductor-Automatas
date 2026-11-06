@@ -1,354 +1,162 @@
-lexema,token,expresion,lenguaje,clasificacion,funcion
-
-do,HACER,do,"C, JavaScript",Bucle_postcondicional,"Ejecuta un bloque de código al menos una vez y luego repite mientras se cumpla la condición"
-for,PARA,for,"Python, Java, C",Bucle_controlado,"Repite un bloque de código con control de inicio, condición y actualización"
-loop,BUCLE,loop,"Python, Ruby, JavaScript",Bucle_infinito,"Ejecuta un ciclo infinito o controlado manualmente"
-while,MIENTRAS,while,"Python, Java",Bucle_condicional,"Repite un bloque de código mientras una condición sea verdadera"
-
-binarysearch,BUSQUEDA_BINARIA,binarysearch,"Java, C++, Python",Busqueda,"Busca un elemento en una lista ordenada de forma eficiente (divide y vencerás)"
-contains,CONTIENE,contains,"Python, Java, C++",Busqueda,"Verifica si un elemento existe dentro de una colección"
-indexof,INDICE_DE,indexof,"Java, JavaScript, Python",Busqueda,"Devuelve la posición de un elemento dentro de una cadena o lista"
-
-decode,DECODIFICAR,decode,"Python, JavaScript, C++",Decodificacion,"Convierte datos codificados a su forma original"
-encode,CODIFICAR,encode,"Python, JavaScript, C++",Codificacion,"Convierte datos a un formato codificado"
-
-compareto,COMPARAR_A,compareto,"Java, C++, C#",Comparacion,"Compara dos cadenas u objetos y devuelve su relación (mayor, menor o igual)"
-equals,ES_IGUAL,equals,"Java, C#, Python",Comparacion,"Verifica si dos objetos son iguales"
-hashcode,CODIGO_HASH,hashcode,"Java, C#, C++",Identificacion,"Genera un código hash para identificar un objeto"
-
-compress,COMPRESION,compress,"Python, Java, C++",Compresion,"Reduce el tamaño de datos o archivos"
-decompress,DECOMPRESION,decompress,"Python, Java, C++",Descompresion,"Restaura datos comprimidos a su estado original"
-unzip,DESCOMPRIMIR,unzip,"Python, Java, C#",Descompresion,"Extrae archivos de un archivo comprimido (.zip)"
-zip,COMPRIMIR,zip,"Python, Java, C#",Compresion,"Comprime archivos en un archivo .zip"
-
-accept,ACEPTAR,accept,"C, Python, Java",Aceptacion,"Acepta una conexión entrante en un servidor"
-bind,ENLAZAR,bind,"C, Python, Java",Asociacion,"Asocia un socket a una dirección IP y puerto"
-connect,CONECTAR,connect,"C, Python, Java",Conexion,"Establece una conexión con un servidor"
-listen,ESCUCHAR,listen,"C, Python, Java",Escucha,"Pone un socket en modo escucha para conexiones entrantes"
-recv,RECIBIR,recv,"C, Python, Java",Recepcion,"Recibe datos desde una conexión"
-send,ENVIAR,send,"C, Python, Java",Envio,"Envía datos a través de una conexión"
-
-epoll,SONDEO_EFICIENTE,epoll,"C (Linux), Python, Java",Monitoreo,"Maneja múltiples eventos de entrada y salida de forma eficiente"
-poll,SONDEO,poll,"C, C#, Python",Monitoreo,"Monitorea múltiples descriptores de archivo para eventos"
-select,SELECCIONAR,select,"Python, C, Java",Seleccion,"Supervisa múltiples conexiones para detectar actividad"
-
-case,CASO,case,"Java, C, JavaScript",Opcion,"Define una opción dentro de una estructura switch"
-default,PREDETERMINADO,default,"Java, C, JavaScript",Predeterminado,"Ejecuta una acción por defecto si no se cumple ningún caso"
-if,SI,if,"Python, Java, C",Pregunta,"Evalúa una condición para decidir si ejecutar un bloque de código"
-else,SI_NO,else,"Python, Java, C",Contrario,"Ejecuta código cuando la condición del if es falsa"
-break,ROMPER,break,"Python, Java, C",Interrupcion,"Termina un ciclo o una estructura switch"
-switch,CONMUTADOR,switch,"Java, C, JavaScript",Seleccion,"Selecciona entre múltiples opciones basadas en una expresión"
-continue,CONTINUAR,continue,"Python, Java, C",Continuacion,"Salta a la siguiente iteración"
-goto,SALTAR,goto,"C, C++, PHP",Salto,"Salta a una etiqueta específica"
-
-guard,GUARDIA,guard,"Rust, Swift",Validacion,"Ejecuta código solo si se cumple una condición"
-die,TERMINAR,die,"Perl, Ruby",Terminacion,"Finaliza la ejecución del programa o script"
-isset,ESTA_DEFINIDO,isset,"PHP, JavaScript",Verificacion,"Verifica si una variable está definida"
-unset,DESDEFINIR,unset,"PHP, JavaScript",Eliminacion,"Elimina una variable"
-
-exit,SALIR,exit,"C, Python, Java",Salida,"Finaliza la ejecución del programa"
-defer,POSPONER,defer,"Swift, Go, Rust",Posposicion,"Pospone la ejecución de una instrucción hasta el final del bloque"
-match,COINCIDIR,match,"Rust, Swift, Haskell",Coincidencia,"Compara un valor contra múltiples patrones"
-pass,PASAR,pass,"Python, Ruby, Swift",Omision,"Indica que no se realiza ninguna acción (bloque vacío)"
-return,REGRESAR,return,"Python, Java, C",Retorno,"Devuelve un valor y finaliza una función"
-
-instanceof,INSTANCIA_DE,instanceof,"JavaScript, Java, C#",Verificacion_de_tipo,"Verifica si un objeto pertenece a una clase o tipo"
-sizeof,TAMANO_DE,sizeof,"C, C++",Medicion,"Devuelve el tamaño en memoria de un tipo o variable"
-typeof,TIPO_DE,typeof,"JavaScript, TypeScript, C#",Identificacion_de_tipo,"Devuelve el tipo de dato de una variable"
-void,VACIO,void,"C, Java, C#",Ausencia_de_valor,"Indica ausencia de valor de retorno o tipo vacío"
-
-atomic,ATOMICO,atomic,"C++, Java",Atomicidad,"Permite operaciones seguras en entornos concurrentes"
-lock,BLOQUEAR,lock,"C#, Java, Python",Bloqueo,"Bloquea un recurso para evitar acceso concurrente"
-mutex,EXCLUSION_MUTUA,mutex,"C++, Java, C#",Exclusion_mutua,"Permite exclusión mutua en acceso a recursos compartidos"
-synchronized,SINCRONIZADO,synchronized,"Java, C#, Python",Sincronizacion,"Sincroniza el acceso a un bloque o método entre hilos"
-unlock,DESBLOQUEAR,unlock,"C#, Java, Python",Desbloqueo,"Libera un recurso previamente bloqueado"
-volatile,VOLATIL,volatile,"Java, C, C++",Variabilidad,"Indica que una variable puede cambiar en cualquier momento"
-
-detach,SEPARAR,detach,"C++, C, Java",Separacion,"Separa un hilo para que se ejecute independientemente"
-join,UNIR,join,"Python, Java, JavaScript",Espera,"Espera a que un hilo termine su ejecución"
-
-pause,PAUSAR,pause,"C, Bash, Python",Pausa,"Detiene temporalmente la ejecución"
-suspend,SUSPENDER,suspend,"Rust, Swift",Suspension,"Suspende la ejecución (generalmente en corrutinas)"
-then,ENTONCES,then,"JavaScript, TypeScript, Dart",Continuacion,"Define una acción a ejecutar después de una promesa"
-
-const,CONSTANTE,const,"JavaScript, C++, C",Constancia,"Declara una variable constante (no modificable)"
-let,DEJAR,let,"JavaScript, TypeScript, Swift",Declaracion,"Declara una variable con alcance de bloque"
-var,VARIABLE,var,"JavaScript",Declaracion,"Declara una variable (generalmente con alcance más amplio)"
-
-decltype,TIPO_DECLARADO,decltype,"C++, D, Rust",Inferencia_de_tipo,"Obtiene el tipo de una expresión en tiempo de compilación"
-immutable,INMUTABLE,immutable,"Dart, Scala, Rust",Inmutabilidad,"Declara datos que no pueden cambiar"
-overload,SOBRECARGAR,overload,"C++, Java, TypeScript",Sobrecarga,"Permite definir múltiples funciones con el mismo nombre"
-
-array,ARREGLO,array,"Python, Java, C",Coleccion,"Define una estructura de datos tipo arreglo"
-boolean,BOOLEANO,boolean,"Java, JavaScript, C",Booleano,"Representa valores verdadero o falso"
-byte,BYTE,byte,"Java, C, C++",Dato_binario,"Representa un dato de 8 bits"
-char,CARACTER,char,"Java, C, C++",Caracter,"Representa un carácter"
-decimal,DECIMAL,decimal,"C#, Python, VB.NET",Decimal,"Representa números con alta precisión decimal"
-double,DOBLE,double,"Python, Java, C",Precision_doble,"Representa números de doble precisión"
-float,FLOTANTE,float,"Python, Java, C",Decimal_simple,"Representa números decimales de precisión simple"
-int,ENTERO,int,"Python, Java, C",Entero,"Representa números enteros"
-long,LARGO,long,"Java, C++, C",Entero_extendido,"Representa enteros de mayor tamaño"
-object,OBJETO,object,"Python, Java, C#",Instancia,"Representa una instancia de una clase"
-short,CORTO,short,"Java, C, C++",Entero_reducido,"Representa enteros de tamaño reducido"
-string,CADENA,string,"Python, Java, C#",Texto,"Representa cadenas de texto"
-
-extern,EXTERNO,extern,"C, C++",Referencia_externa,"Declara una variable definida en otro archivo"
-inline,EN_LINEA,inline,"C, C++",Insercion_directa,"Sugiere insertar el código de una función directamente en el punto de llamada"
-struct,ESTRUCTURA,struct,"C, C++, Go",Estructura,"Define una estructura de datos compuesta"
-typedef,TIPO_DEFINIDO,typedef,"C, C++",Alias_de_tipo,"Crea un alias para un tipo de dato"
-union,UNION,union,"C, C++",Memoria_compartida,"Permite almacenar diferentes tipos en la misma ubicación de memoria"
-
-align,ALINEAR,align,"C, C++, Rust",Alineacion,"Define la alineación en memoria de los datos"
-concept,CONCEPTO,concept,"C++, D, Rust",Restriccion_de_tipo,"Define restricciones para tipos en plantillas"
-constexpr,CONSTANTE_EN_TIEMPO_DE_COMPILACION,constexpr,"C++, D, Rust",Evaluacion_en_compilacion,"Evalúa expresiones en tiempo de compilación"
-noexcept,SIN_EXCEPCION,noexcept,"C++, D, C#",Garantia_de_excepcion,"Indica que una función no lanza excepciones"
-packed,EMPAQUETADO,packed,"C, C++, Rust",Compactacion,"Ajusta estructuras para usar menos memoria"
-pragma,DIRECTIVA,pragma,"C, C++, Objective-C",Directiva,"Da instrucciones especiales al compilador"
-staticassert,AFIRMACION_ESTATICA,staticassert,"C++, D, Rust",Verificacion_en_compilacion,"Verifica condiciones en tiempo de compilación"
-
-dict,DICCIONARIO,dict,"Python, JavaScript, C#",Clave_valor,"Estructura de pares clave-valor"
-input,ENTRADA,input,"Python, JavaScript, C",Entrada,"Permite recibir datos del usuario"
-scanf,LEER_FORMATO,scanf,"C, C++, Objective-C",Lectura,"Lee datos desde la entrada estándar"
-
-namespace,ESPACIO_DE_NOMBRES,namespace,"C++, C#",Agrupacion,"Agrupa identificadores para evitar conflictos"
-template,PLANTILLA,template,"C++, D, Java",Generalizacion,"Permite programación genérica"
-typename,NOMBRE_DE_TIPO,typename,"C++, D, C#",Especificacion_de_tipo,"Especifica tipos en plantillas"
-using,USANDO,using,"C++, C#, Swift",Importacion,"Importa o define alias de nombres o tipos"
-
-arraylist,LISTA_DINAMICA,arraylist,"Java, C#",Coleccion_dinamica,"Lista dinámica de elementos"
-hashmap,MAPA_HASH,hashmap,"Java, C++, C#",Clave_valor,"Almacena pares clave-valor"
-hashset,CONJUNTO_HASH,hashset,"Java, C#, Python",Conjunto_unico,"Almacena elementos únicos"
-linkedlist,LISTA_ENLAZADA,linkedlist,"Java, C++, Python",Lista_enlazada,"Lista enlazada de elementos"
-priorityqueue,COLA_DE_PRIORIDAD,priorityqueue,"Java, C++, Python",Prioridad,"Cola con prioridad"
-treeset,CONJUNTO_DE_ARBOL,treeset,"Java, C++, Python",Conjunto_ordenado,"Conjunto ordenado sin duplicados"
-
-list,LISTA,list,"Python, Java, C#",Coleccion_ordenada,"Colección ordenada de elementos"
-map,MAPA,map,"Java, C++, C#",Clave_valor,"Estructura clave-valor"
-set,CONJUNTO,set,"Python, Java, C++",Conjunto_unico,"Define una colección de elementos únicos sin orden"
-
-random,ALEATORIO,random,"Python, Java, C++",Aleatoriedad,"Genera un número aleatorio dentro de un rango o entre 0 y 1"
-
-isfinite,ES_FINITO,isfinite,"JavaScript, Python, C",Verificacion_numerica,"Verifica si un número es finito"
-isnan,NO_ES_NUMERO,isnan,"JavaScript, Python, C",Verificacion_numerica,"Verifica si un valor no es un número (NaN)"
-tryparse,INTENTAR_ANALIZAR,tryparse,"C#, Java, Python",Conversion_segura,"Intenta convertir un valor sin lanzar excepción si falla"
-
-inputstream,FLUJO_DE_ENTRADA,inputstream,"Java, C#, Python",Lectura,"Permite leer datos desde una fuente de entrada"
-outputstream,FLUJO_DE_SALIDA,outputstream,"Java, C#, Python",Escritura,"Permite escribir datos hacia una salida"
-
-async,ASINCRONO,async,"JavaScript, Python, C#",Asincronia,"Declara una función asíncrona"
-await,AGUARDAR,await,"JavaScript, Python, C#",Espera,"Espera el resultado de una función asíncrona"
-def,DEFINIR,def,"Python, CoffeeScript, Boo",Definicion,"Define una función"
-function,FUNCION,function,"JavaScript, Swift",Declaracion,"Declara una función"
-lambda,LAMBDA,lambda,"Python, Java, C#",Funcion_anonima,"Define una función anónima"
-yield,PRODUCIR,yield,"Python, JavaScript, C#",Generacion,"Produce valores en una función generadora"
-
-as,COMO,as,"Python, C#, JavaScript",Conversion,"Convierte o trata un valor como otro tipo"
-global,GLOBAL,global,"Python, JavaScript, Ruby",Alcance_global,"Declara una variable como global"
-nonlocal,NO_LOCAL,nonlocal,"Python, Lua, Swift",Alcance_externo,"Permite modificar variables de un ámbito externo"
-with,CON_RECURSO,with,"Python, C#, Ruby",Gestion_de_recursos,"Maneja recursos automáticamente (abre y cierra)"
-
-box,CAJA,box,"Rust, C++, Swift",Asignacion_dinamica,"Asigna datos en memoria dinámica"
-move,MOVER,move,"Rust, C++, Swift",Transferencia,"Transfiere la propiedad de un valor"
-
-inout,ENTRADA_SALIDA,inout,"Swift, Dart",Referencia_modificable,"Permite pasar variables por referencia modificable"
-out,SALIDA,out,"C#, VB.NET, F#",Salida_por_parametro,"Permite devolver valores mediante parámetros"
-ref,REFERENCIA,ref,"C#, Swift, Dart",Referencia,"Pasa variables por referencia"
-
-self,INSTANCIA_ACTUAL,self,"Python, Rust, Swift",Referencia_de_instancia,"Hace referencia a la instancia actual"
-abstract,ABSTRACTO,abstract,"Java, C#, TypeScript",Abstraccion,"Define clases o métodos incompletos"
-extends,EXTIENDE,extends,"Java, C++",Herencia,"Permite heredar de otra clase"
-implements,IMPLEMENTA,implements,"Java, TypeScript, C#",Implementacion_de_interfaces,"Implementa una interfaz"
-
-export,EXPORTAR,export,"JavaScript, TypeScript",Exportacion_de_modulos,"Permite exportar variables o funciones"
-from,DESDE,from,"Python, JavaScript, Ruby",Importacion_parcial,"Permite importar elementos específicos"
-import,IMPORTAR,import,"Python, Java, JavaScript",Importacion_de_modulos,"Importa módulos o librerías"
-include,INCLUIR,include,"C, C++",Inclusion_de_archivos,"Incluye archivos o cabeceras"
-package,PAQUETE,package,"Java, Scala",Organizacion_de_codigo,"Agrupa clases en paquetes"
-require,REQUERIR,require,"JavaScript, Node.js",Carga_de_dependencias,"Importa dependencias"
-
-emplace,EMPLAZAR,emplace,"C++, Rust, D",Insercion_en_estructuras,"Inserta un elemento directamente sin copias"
-peek,INSPECCIONAR,peek,"Python, Java, C++",Consulta_de_estructuras,"Devuelve el elemento superior sin eliminarlo"
-pop,EXTRAER,pop,"Python, Java, C++",Extraccion_de_estructuras,"Elimina y devuelve el elemento superior"
-push,INSERTAR,push,"Python, Java, C++",Insercion_en_estructuras,"Inserta un elemento en la estructura"
-
-file,ARCHIVO,file,"Python, Java, C++",Manejo_de_archivos,"Representa y manipula archivos"
-rewind,REINICIAR_PUNTERO,rewind,"C, Python, Java",Control_de_puntero_de_archivo,"Regresa el puntero al inicio del archivo"
-seek,MOVER_PUNTERO,seek,"C, Python, Java",Control_de_puntero_de_archivo,"Mueve el puntero a una posición específica"
-
-scanner,ESCANER,scanner,"Java, C#, Python",Entrada_de_datos,"Permite leer y procesar entrada"
-shell,CONSOLA,shell,"Bash, Python, Ruby",Ejecucion_de_comandos,"Ejecuta comandos del sistema"
-
-deque,COLA_DOBLE,deque,"Python, C++, Java",Estructura_lineal_doble,"Inserción y eliminación en ambos extremos"
-queue,COLA,queue,"Python, Java, C++",Estructura_lineal_FIFO,"FIFO (primero en entrar, primero en salir)"
-stack,PILA,stack,"Python, Java, C++",Estructura_lineal_LIFO,"LIFO (último en entrar, primero en salir)"
-vector,VECTOR,vector,"C++, Java, C#",Arreglo_dinamico,"Arreglo dinámico"
-
-false,FALSO,false,"Python, Java, C",Valor_booleano,"Representa un valor lógico falso"
-true,VERDADERO,true,"Python, Java, C",Valor_booleano,"Representa un valor lógico verdadero"
-nan,NO_NUMERICO,nan,"JavaScript, Python, Java",Valor_numerico_especial,"Representa un valor no numérico"
-null,NULO,null,"Java, JavaScript, C#",Valor_nulo,"Representa ausencia de valor u objeto"
-nullptr,PUNTERO_NULO,nullptr,"C++, C, Rust",Valor_nulo_de_puntero,"Representa un puntero nulo"
-
-undefined,INDEFINIDO,undefined,"JavaScript, TypeScript, Python",Valor_indefinido,"Indica que una variable no tiene valor asignado"
-
-systemcall,LLAMADA_AL_SISTEMA,systemcall,"C, Python, Java",Invocacion_del_sistema,"Invoca servicios del sistema operativo"
-
-open,ABRIR,open,"Python, C, Java",Apertura_de_archivos,"Abre un archivo"
-read,LEER,read,"Python, C, Java",Lectura_de_archivos,"Lee datos de un archivo"
-write,ESCRIBIR,write,"Python, C, Java",Escritura_de_archivos,"Escribe datos en un archivo"
-close,CERRAR,close,"Python, C, Java",Cierre_de_archivos,"Cierra un archivo abierto"
-flush,VACIAR,flush,"Python, C, Java",Vaciado_de_buffer,"Fuerza la escritura de datos pendientes"
-
-try,INTENTAR,try,"Python, Java, JavaScript",Inicio_de_manejo_de_excepciones,"Define un bloque para manejo de errores"
-catch,CAPTURAR,catch,"Java, JavaScript, C#",Captura_de_excepciones,"Captura una excepción"
-except,EXCEPTO,except,"Python, Ruby",Captura_de_excepciones,"Maneja errores en bloques try"
-finally,FINALMENTE,finally,"Java, Python, C#",Finalizacion_de_excepciones,"Ejecuta código siempre (haya error o no)"
-raise,LANZAR,raise,"Python, Ruby",Lanzamiento_de_excepciones,"Lanza una excepción"
-throw,ARROJAR,throw,"Java, JavaScript, C#",Lanzamiento_de_excepciones,"Lanza una excepción"
-throws,DECLARA_EXCEPCIONES,throws,"Java, C#, Swift",Declaracion_de_excepciones,"Declara excepciones que puede lanzar un método"
-
-private,PRIVADO,private,"Java, C#, C++",Restriccion_de_acceso,"Restringe el acceso a la clase"
-protected,PROTEGIDO,protected,"Java, C#, C++",Acceso_heredado,"Permite acceso a subclases"
-public,PUBLICO,public,"Java, C#, C++",Acceso_publico,"Permite acceso desde cualquier lugar"
-
-final,FINAL,final,"Java, C++",Bloqueo_de_modificacion,"Evita modificación o herencia"
-static,ESTATICO,static,"Java, C#, C++",Miembro_compartido,"Define miembros compartidos"
-readonly,SOLO_LECTURA,readonly,"C#, Java, Swift",Inmutabilidad,"Evita modificación después de asignación"
-
-auto,AUTO,auto,"C++, D, JavaScript",Inferencia_de_tipo,"Deduce automáticamente el tipo"
-register,REGISTRO,register,"C, C++",Optimizacion_de_memoria,"Sugiere almacenar en registros"
-strictfp,PRECISION_ESTRICTA,strictfp,"Java, C#, C++",Control_de_precision_numerica,"Controla cálculos en punto flotante"
-
-internal,INTERNO,internal,"C#, VB.NET, F#",Acceso_interno,"Restringe acceso al módulo"
-sealed,SELLADO,sealed,"C#, Swift, Java",Bloqueo_de_herencia,"Evita que una clase sea heredada"
-native,NATIVO,native,"Java, C++, C",Interoperabilidad_nativa,"Permite usar código nativo"
-
-crate,CRATE,crate,"Rust, D, Nim",Unidad_de_compilacion,"Unidad de compilación o paquete"
-mod,MODULO,mod,"Rust, Java",Definicion_de_modulo,"Define un módulo"
-use,USAR,use,"Rust, JavaScript",Uso_de_modulos,"Permite usar módulos"
-pub,PUBLICAR,pub,"Rust, Swift, D",Visibilidad_publica,"Hace elementos públicos"
-
-notify,NOTIFICAR,notify,"Java, C#, Python",Notificacion_de_hilos,"Despierta un hilo en espera"
-notifyall,NOTIFICAR_TODOS,notifyall,"Java, C#, Python",Notificacion_multiple_de_hilos,"Despierta todos los hilos en espera"
-
-copyof,COPIA_DE,copyof,"Java, C#, Python",Copia_de_objetos,"Crea una copia de un objeto o arreglo"
-new,NUEVO,new,"Java, C++, C#",Instanciacion_de_objetos,"Crea una nueva instancia"
-super,SUPER,super,"Java, Python, C++",Referencia_a_superclase,"Accede a la clase padre"
-this,ESTE,this,"Java, C#, JavaScript",Referencia_a_instancia,"Referencia a la instancia actual"
-
-exec,EJECUTAR,exec,"C, Python, Ruby",Reemplazo_de_proceso,"Reemplaza el proceso actual por otro programa"
-fork,BIFURCAR,fork,"C, Python, Ruby",Creacion_de_proceso,"Crea un nuevo proceso hijo"
-wait,ESPERAR,wait,"C, Python, Ruby",Espera_de_proceso,"Espera la finalización de un proceso hijo"
-
-signal,SENAL,signal,"C, Python, Java",Manejo_de_senales,"Maneja señales del sistema"
-trap,CAPTURAR,trap,"Bash, C, Python",Captura_de_senales,"Captura y maneja señales o eventos"
-
-thread,HILO,thread,"Java, C#, Python",Creacion_de_hilos,"Representa o crea un hilo de ejecución"
-
-class,CLASE,class,"Python, Java, C++",Definicion_de_clases,"Define una clase"
-interface,INTERFAZ,interface,"Java, C#, TypeScript",Definicion_de_interfaces,"Define contratos que deben implementarse"
-enum,ENUMERACION,enum,"Java, C, Python",Definicion_de_constantes,"Define un conjunto de constantes"
-clone,CLONAR,clone,"Java, C++, C#",Copia_de_objetos,"Crea una copia de un objeto"
-
-cookie,COOKIE,cookie,"Python, JavaScript, PHP",Almacenamiento_de_cliente,"Almacena información del cliente"
-header,ENCABEZADO,header,"Python, JavaScript, Java",Metadatos_de_comunicacion,"Contiene metadatos de la comunicación"
-request,SOLICITUD,request,"Python, JavaScript, Java",Solicitud_web,"Representa una solicitud al servidor"
-response,RESPUESTA,response,"Python, JavaScript, Java",Respuesta_web,"Representa la respuesta del servidor"
-
-http,HTTP,http,"JavaScript, Python, Java",Comunicacion_web,"Protocolo de comunicación web"
-
-token,TOKEN,token,"Python, JavaScript, Java",Credencial_de_autenticacion,"Representa credenciales de acceso"
-
-url,URL,url,"Python, JavaScript, Java",Direccion_de_recurso,"Dirección de un recurso en internet"
-
-key,CLAVE,key,"Python, Java, C++",Clave_de_estructura,"Representa la clave en un par clave-valor"
-value,VALOR,value,"Python, Java, C++",Valor_de_estructura,"Representa el valor asociado a una clave"
-
-main,PRINCIPAL,main,"C, C++, Java",Punto_de_entrada,"Función principal donde inicia el programa"
-
-echo,ECHO,echo,"Bash, JavaScript",Salida_de_consola,"Imprime texto en la consola"
-print,IMPRIMIR,print,"Python, JavaScript, C",Salida_de_consola,"Muestra datos en la consola"
-printf,IMPRIMIR_FORMATO,printf,"C, C++, Objective-C",Salida_formateada,"Imprime texto con formato"
-printline,IMPRIMIR_LINEA,printline,"Java, C#, Python",Salida_con_salto_de_linea,"Imprime una línea con salto de línea"
-
-encrypt,CIFRAR,encrypt,"Python, Java, C++",Cifrado_de_datos,"Cifra datos"
-decrypt,DESCIFRAR,decrypt,"Python, Java, C++",Descifrado_de_datos,"Descifra datos"
-hash,HASH,hash,"Python, Java, C++",Generacion_de_hash,"Genera un valor hash"
-sign,FIRMAR,sign,"Python, Java, C++",Firma_digital,"Firma digitalmente datos"
-verify,VERIFICAR,verify,"Python, Java, C++",Verificacion_de_integridad,"Verifica firmas o integridad"
-
-csv,CSV,csv,"Python, Java, C++",Formato_de_datos,"Maneja datos en formato CSV"
-json,JSON,json,"Python, JavaScript, Java",Formato_de_datos,"Representa datos en formato JSON"
-xml,XML,xml,"Python, Java, C#",Formato_de_datos,"Representa datos en formato XML"
-
-serialize,SERIALIZAR,serialize,"Python, Java, C#",Conversion_para_almacenamiento,"Convierte objetos a formato de almacenamiento"
-deserialize,DESERIALIZAR,deserialize,"Python, Java, C#",Reconstruccion_de_objetos,"Convierte datos a objetos"
-transient,TRANSITORIO,transient,"Java, C#, Swift",Exclusion_de_serializacion,"Evita que un campo sea serializado"
-
-parse,ANALIZAR,parse,"Python, JavaScript, C#",Analisis_de_datos,"Analiza y transforma datos"
-stringify,CONVERTIR_TEXTO,stringify,"JavaScript, Python, Java",Conversion_a_texto,"Convierte objetos a texto"
-
-sqlite,SQLITE,sqlite,"Python, C, Java",Gestion_de_base_de_datos,"Maneja base de datos SQLite"
-nonserializable,NO_SERIALIZABLE,nonserializable,"Java, Scala, C#",Restriccion_de_persistencia,"Indica que un objeto no puede ser serializado"
-
-any,CUALQUIERA,any,"C++, C#, Swift",Tipado_flexible,"Representa cualquier tipo de dato"
-dynamic,DINAMICO,dynamic,"C#, Python, Ruby",Resolucion_dinamica_de_tipos,"Permite resolver tipos en tiempo de ejecución"
-optional,OPCIONAL,optional,"Java, C++, Swift",Valor_opcional,"Representa valores que pueden ser nulos"
-
-tuple,TUPLA,tuple,"Python, Swift, Haskell",Agrupacion_de_valores,"Agrupa múltiples valores en una sola variable"
-variant,VARIANTE,variant,"C++, Rust, Swift",Almacenamiento_de_tipos_variantes,"Permite almacenar diferentes tipos en una variable"
-
-impl,IMPLEMENTACION,impl,"Rust, Swift, D",Definicion_de_implementacion,"Define implementación de métodos o interfaces"
-trait,RASGO,trait,"Rust, Swift",Definicion_de_comportamiento,"Define comportamiento compartido"
-where,DONDE,where,"C#, Swift",Restriccion_de_tipos,"Define condiciones en tipos genéricos"
-
-eval,EVALUAR,eval,"JavaScript, Python",Ejecucion_dinamica,"Ejecuta código contenido en texto"
-
-fill,RELLENAR,fill,"Java, C++, Python",Relleno_de_estructuras,"Llena estructuras con un valor"
-sort,ORDENAR,sort,"Python, Java, C++",Ordenamiento_de_datos,"Ordena elementos"
-
-tostring,A_CADENA,tostring,"Java, C#, JavaScript",Conversion_a_cadena,"Convierte un objeto a cadena"
-
-console,CONSOLA,console,"Java, C#, Python",Interaccion_consola,"Permite interacción con la consola"
-
-datetime,FECHA_HORA,datetime,"Python, Java, C#",Manejo_de_fecha_y_hora,"Maneja fechas y tiempo"
-time,TIEMPO,time,"Python, Java, C",Medicion_de_tiempo,"Maneja medición del tiempo"
-
-math,MATEMATICAS,math,"Python, Java, C++",Funciones_matematicas,"Proporciona funciones matemáticas"
-regex,EXPRESION_REGULAR,regex,"Python, Java, JavaScript",Validacion_y_busqueda_de_texto,"Permite búsqueda y validación de texto"
-
-system,SISTEMA,system,"Java, C#, Python",Acceso_al_sistema,"Acceso a funciones del sistema"
-
-assert,AFIRMAR,assert,"Python, Java, C",Verificacion_de_condiciones,"Verifica condiciones durante la ejecución"
-
-"+",SUMA,"+","Python, Java, C, JavaScript",Operadores_aritmeticos,"Realiza la suma de dos valores"
-"-",RESTA,"-","Python, Java, C, JavaScript",Operadores_aritmeticos,"Realiza la resta entre valores"
-"*",MULTIPLICACION,"*","Python, Java, C, JavaScript",Operadores_aritmeticos,"Multiplica dos valores"
-"/",DIVISION,"/","Python, Java, C, JavaScript",Operadores_aritmeticos,"Divide un valor entre otro"
-"**",POTENCIA,"**","Python, JavaScript",Operadores_aritmeticos,"Eleva un numero a una potencia"
-"%",MODULO,"%","Python, Java, C, JavaScript",Operadores_aritmeticos,"Devuelve el residuo de una division"
-"++",INCREMENTO,"++","Python, Java, C, JavaScript",Operadores_aritmeticos,"Incrementa en una unidad el valor de una variable"
-"--",DECREMENTO,"--","Python, Java, C, JavaScript",Operadores_aritmeticos,"Disminuye en una unidad el valor de una variable"
-
-"<",MENOR_QUE,"<","Python, Java, C, JavaScript",Operadores_relacionales,"Verifica si un valor es menor que otro"
-">",MAYOR_QUE,">","Python, Java, C, JavaScript",Operadores_relacionales,"Verifica si un valor es mayor que otro"
-"==",IGUALDAD,"==","Python, Java, C, JavaScript",Operadores_relacionales,"Compara si dos valores son iguales"
-"!=",DIFERENTE,"!=","Python, Java, C, JavaScript",Operadores_relacionales,"Verifica si dos valores son distintos"
-"<=",MENOR_O_IGUAL,"<=","Python, Java, C, JavaScript",Operadores_relacionales,"Verifica si un valor es menor o igual"
-">=",MAYOR_O_IGUAL,">=","Python, Java, C, JavaScript",Operadores_relacionales,"Verifica si un valor es mayor o igual"
-
-"=",ASIGNACION,"=","Python, Java, C, JavaScript",Asignacion,"Asigna un valor a una variable"
-
-"&&",AND_LOGICO,"&&","Python, Java, C",Operadores_logicos,"Verdadero si ambas condiciones son verdaderas"
-"||",OR_LOGICO,"||","Python, Java, C",Operadores_logicos,"Verdadero si al menos una condicion es verdadera"
-"!",NOT_LOGICO,"!","Python, Java, C",Operadores_logicos,"Niega una condicion logica"
-
-"(",PARENTESIS_IZQ,"(","Todos",Simbolos,"Inicio de agrupacion o parametros"
-")",PARENTESIS_DER,")","Todos",Simbolos,"Fin de agrupacion o parametros"
-"{",LLAVE_IZQ,"{","C, Java, JavaScript",Simbolos,"Inicio de bloque de codigo"
-"}",LLAVE_DER,"}","C, Java, JavaScript",Simbolos,"Fin de bloque de codigo"
-"[",CORCHETE_IZQ,"[","Python, Java, C, JavaScript",Simbolos,"Inicio de lista o indice"
-"]",CORCHETE_DER,"]","Python, Java, C, JavaScript",Simbolos,"Fin de lista o indice"
-
-";",PUNTO_Y_COMA,";","C, Java, JavaScript",Delimitadores,"Fin de instruccion"
-":",DOS_PUNTOS,":","Python, JavaScript",Delimitadores,"Inicio de bloque o clave-valor"
+﻿lexema,token,expresion,lenguajes,clasificacion,funcion,estado
+if,IF,if,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Control_condicional,Evalúa una condición y ejecuta un bloque cuando es verdadera,Implementado
+else,ELSE,else,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Control_condicional,Define el bloque alternativo de una condición,Implementado
+elif,ELIF,elif,Python,Control_condicional,Condición alternativa; en C# suele expresarse como else if,Previsto
+try,TRY,try,"C#, Python, Java, JavaScript, PHP, C++",Excepciones,Inicia un bloque protegido para manejar excepciones,Implementado
+catch,CATCH,catch,"C#, Java, JavaScript, PHP",Excepciones,Captura una excepción; Python utiliza except,Implementado
+except,EXCEPT,except,Python,Excepciones,Captura una excepción en Python,Previsto
+finally,FINALLY,finally,"C#, Python, Java, JavaScript, PHP",Excepciones,Define un bloque que se ejecuta al finalizar el manejo de excepciones,Implementado
+throw,THROW,throw,"C#, Java, JavaScript, PHP",Excepciones,Lanza una excepción; Python utiliza raise,Implementado
+raise,RAISE,raise,Python,Excepciones,Lanza una excepción en Python,Previsto
+while,WHILE,while,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Bucle_condicional,Repite un bloque mientras la condición sea verdadera,Implementado
+for,FOR,for,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Bucle_controlado,"Ejecuta un ciclo controlado por una variable, condición o secuencia",Implementado
+do,DO,do,"C#, Java, C, C++, JavaScript, PHP",Bucle_postcondicional,Inicia un ciclo que evalúa su condición después del bloque,Implementado
+break,BREAK,break,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Control_de_bucle,Termina el ciclo o selección actual,Implementado
+continue,CONTINUE,continue,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Control_de_bucle,Pasa a la siguiente iteración,Implementado
+return,RETURN,return,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Retorno,Termina una función y opcionalmente devuelve una expresión,Implementado
+switch,SWITCH,switch,"C#, Java, C, C++, JavaScript, PHP",Seleccion_multiple,Selecciona la ejecución según una expresión,Implementado
+case,CASE,case,"C#, Java, C, C++, JavaScript, PHP",Seleccion_multiple,Define una alternativa dentro de switch,Implementado
+default,DEFAULT_KW,default,"C#, Java, C, C++, JavaScript, PHP",Seleccion_multiple,Define la alternativa predeterminada de switch,Implementado
+foreach,FOREACH,foreach,"C#, PHP, PowerShell",Bucle_de_iteracion,Recorre los elementos de una colección; Python usa for sobre secuencias,Implementado
+in,IN,in,"C#, Python, JavaScript, PHP, Ruby",Iteracion_y_pertenencia,Separa variable y colección o comprueba pertenencia según el lenguaje,Implementado
+yield,YIELD,yield,"C#, Python, JavaScript, Java",Generadores,Produce un valor desde un iterador o generador,Previsto
+async,ASYNC,async,"C#, Python, JavaScript, Java",Asincronia,Declara una función o contexto asíncrono,Previsto
+await,AWAIT,await,"C#, Python, JavaScript",Asincronia,Espera una operación asíncrona,Previsto
+true,TRUE,true,"C#, Java, C, C++, JavaScript, PHP, Go, Rust",Literal_booleano,Representa el valor lógico verdadero,Implementado
+false,FALSE,false,"C#, Java, C, C++, JavaScript, PHP, Go, Rust",Literal_booleano,Representa el valor lógico falso,Implementado
+null,NULL,null,"C#, Java, JavaScript, PHP, SQL",Literal_nulo,Representa ausencia de referencia o valor; Python utiliza None,Implementado
+None,NONE,None,Python,Literal_nulo,Representa ausencia de valor en Python,Previsto
+new,NEW,new,"C#, Java, C++, JavaScript, PHP",Creacion,Crea una instancia de objeto o arreglo,Implementado
+const,CONST,const,"C#, JavaScript, C++, PHP, Go",Modificador_de_variable,Declara una constante o referencia no reasignable según el lenguaje,Implementado
+static,STATIC,static,"C#, Java, C, C++, PHP",Modificador,Declara miembros o elementos estáticos,Implementado
+public,PUBLIC,public,"C#, Java, C++, PHP",Modificador_de_acceso,Declara un miembro con acceso público,Reconocido léxicamente
+private,PRIVATE,private,"C#, Java, C++, PHP",Modificador_de_acceso,Declara un miembro con acceso privado,Reconocido léxicamente
+protected,PROTECTED,protected,"C#, Java, C++, PHP",Modificador_de_acceso,Restringe el acceso a la clase y sus derivados,Previsto
+internal,INTERNAL,internal,C#,Modificador_de_acceso,Restringe el acceso al mismo ensamblado,Previsto
+print,PRINT,print,"Python, Ruby, PHP (con diferencias)",Salida_de_consola,Token reservado no admitido actualmente como instrucción,Reconocido léxicamente
+println,PRINTLN,println,"Java, Kotlin, Scala",Salida_de_consola,Imprime texto seguido de salto de línea; token reservado no admitido actualmente,Reconocido léxicamente
+int,INT,int,"C#, Python, Java, C, C++, JavaScript (Number), PHP, Go",Tipo_de_dato,Representa números enteros; rango y tamaño dependen del lenguaje,Implementado
+bool,BOOL,bool,"C#, Python, C, C++, Go",Tipo_de_dato,Representa valores booleanos,Implementado
+boolean,BOOLEAN,boolean,"Java, JavaScript, Kotlin; alias aceptado por esta gramática",Tipo_de_dato,Representa valores booleanos; aquí también se acepta como alias,Implementado
+string,STRING,string,"C#, Python (str), Java (String), JavaScript, PHP",Tipo_de_dato,Representa cadenas de texto,Implementado
+char,CHAR,char,"C#, Java, C, C++, Kotlin",Tipo_de_dato,Representa un carácter; Python usa cadenas de longitud uno,Implementado
+double,DOUBLE,double,"C#, Java, C, C++, PHP",Tipo_de_dato,Número de punto flotante de doble precisión,Implementado
+float,FLOAT,float,"C#, Java, C, C++, Python",Tipo_de_dato,Número de punto flotante; float de Python suele ser doble precisión,Implementado
+long,LONG,long,"C#, Java, C, C++, Go",Tipo_de_dato,Entero de mayor capacidad; rango depende del lenguaje,Implementado
+short,SHORT,short,"C#, Java, C, C++",Tipo_de_dato,Entero de rango reducido en lenguajes que distinguen este tipo,Implementado
+byte,BYTE,byte,"C#, Java, C, C++, Python (bytes), Go (uint8)",Tipo_de_dato,Entero pequeño o dato de 8 bits según el lenguaje,Implementado
+decimal,DECIMAL,decimal,"C#, SQL, Python (decimal.Decimal), Java (BigDecimal)",Tipo_de_dato,Tipo decimal de precisión fija o alta; no se implementará en esta versión,Previsto
+void,VOID,void,"C#, Java, C, C++",Tipo_de_retorno,Indica que una función no devuelve un valor,Implementado
+object,OBJECT,object,"C#, Java, Python, JavaScript",Tipo_de_dato,Representa un objeto o valor general según el lenguaje,Previsto
+var,VAR,var,"C#, JavaScript, Java, Kotlin, Go",Inferencia_de_tipo,Permite inferir el tipo o declarar variables según el lenguaje,Previsto
+dynamic,DYNAMIC,dynamic,C#,Tipo_de_dato,Permite resolver operaciones y miembros dinámicamente,Previsto
+Console,CONSOLE,Console,C#,Consola,Clase de .NET para entrada y salida en consola,Implementado
+WriteLine,WRITELINE,WriteLine,C#,Salida_de_consola,Escribe en consola y agrega salto de línea,Implementado
+Write,WRITE,Write,C#,Salida_de_consola,Escribe en consola sin agregar necesariamente salto de línea,Previsto
+ReadLine,READLINE,ReadLine,C#,Entrada_de_consola,Lee una línea desde la consola,Implementado
+ReadKey,READKEY,ReadKey,C#,Entrada_de_consola,Lee una tecla desde la consola,Implementado
+// ...,COMENTARIO_LINEA,// (hasta fin de línea),"C#, Java, C, C++, JavaScript, PHP, Go, Rust; Python usa #",Comentario,Comentario de una línea; el delimitador varía por lenguaje,Implementado
+/* ... */,COMENTARIO_BLOQUE,/* ... */,"C#, Java, C, C++, JavaScript, PHP, Go, Rust",Comentario,Comentario de bloque delimitado por apertura y cierre,Implementado
+<NUMERO>,NUMERO,[0-9]+,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Literal_entero,Reconoce una secuencia de dígitos enteros,Implementado
+<DECIMAL>,DECIMAL,[0-9]+\.[0-9]+,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Literal_decimal,Reconoce parte entera y fraccionaria; la regla actual no admite exponente,Implementado
+<CADENA>,CADENA,"""...""","C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Literal_cadena,Reconoce texto entre comillas; revisar secuencias de escape,Implementado
+<CARACTER>,CARACTER,'x',"C#, Java, C, C++, Kotlin",Literal_caracter,Representa un carácter; Python lo representa como cadena de longitud uno,Implementado
+<IDENTIFICADOR>,IDENTIFICADOR,[A-Za-z][A-Za-z0-9]*,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Identificador,Reconoce nombres que comienzan con letra y continúan con letras o dígitos; no admite guion bajo,Implementado
+Parse,IDENTIFICADOR (validación semántica),Parse,C#,Conversion,Método de tipos como int.Parse y double.Parse para convertir cadenas,Implementado
+Convert,IDENTIFICADOR (validación semántica),Convert,C#,Conversion,Clase que proporciona conversiones mediante métodos ToX,Implementado
+ToInt32,IDENTIFICADOR (validación semántica),ToInt32,C#,Conversion,Convierte un valor a entero de 32 bits,Implementado
+ToDouble,IDENTIFICADOR (validación semántica),ToDouble,C#,Conversion,Convierte un valor a double,Implementado
+ToBoolean,IDENTIFICADOR (validación semántica),ToBoolean,C#,Conversion,Convierte un valor a booleano,Previsto
+ToString,IDENTIFICADOR (validación semántica),ToString,"C#, Java, Python (str), JavaScript",Conversion,Obtiene una representación textual de un valor,Previsto
+ToInt64,IDENTIFICADOR (validación semántica),ToInt64,C#,Conversion,Convierte un valor a entero de 64 bits,Previsto
+ToSingle,IDENTIFICADOR (validación semántica),ToSingle,C#,Conversion,Convierte un valor a float de precisión simple,Previsto
+ToDecimal,IDENTIFICADOR (validación semántica),ToDecimal,C#,Conversion,Convierte un valor a decimal; fuera del alcance de esta versión,Previsto
+Array,IDENTIFICADOR (validación semántica),Array,C#,Operaciones_de_arreglo,Clase para operaciones estáticas sobre arreglos,Implementado
+Sort,IDENTIFICADOR (validación semántica),Sort,C#,Operaciones_de_arreglo,Ordena elementos mediante Array.Sort,Implementado
+Reverse,IDENTIFICADOR (validación semántica),Reverse,C#,Operaciones_de_arreglo,Invierte elementos mediante Array.Reverse,Implementado
+IndexOf,IDENTIFICADOR (validación semántica),IndexOf,C#,Operaciones_de_arreglo,Busca un elemento y devuelve su índice o -1,Implementado
+Copy,IDENTIFICADOR (validación semántica),Copy,C#,Operaciones_de_arreglo,Copia elementos de un arreglo a otro,Implementado
+Length,IDENTIFICADOR (validación semántica),Length,"C#, Java (arrays), JavaScript (length), Python (len)",Propiedad_de_longitud,Consulta la longitud; la sintaxis varía por lenguaje,Implementado
+Message,IDENTIFICADOR (validación semántica),Message,C#,Propiedad_de_excepcion,Consulta el mensaje de una excepción,Implementado
+List,IDENTIFICADOR (validación semántica),List,"C# (List<T>), Java (List), Python (list)",Coleccion,Representa una colección ordenada,Previsto
+Add,IDENTIFICADOR (validación semántica),Add,"C#, Java; Python usa append en listas",Coleccion,Agrega un elemento a una colección,Previsto
+Remove,IDENTIFICADOR (validación semántica),Remove,"C#, Java; Python tiene métodos equivalentes",Coleccion,Elimina un elemento de una colección,Previsto
+Count,IDENTIFICADOR (validación semántica),Count,"C# (colecciones), SQL, Python (método)",Propiedad_de_conteo,Obtiene el número de elementos; sintaxis variable,Previsto
+<=,MENOR_IGUAL,<=,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Operador_relacional,Comprueba si el operando izquierdo es menor o igual,Implementado
+>=,MAYOR_IGUAL,>=,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Operador_relacional,Comprueba si el operando izquierdo es mayor o igual,Implementado
+==,IGUALDAD,==,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Operador_relacional,Comprueba igualdad según las reglas del lenguaje,Implementado
+!=,DIFERENTE,!=,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Operador_relacional,Comprueba desigualdad,Implementado
+<,MENOR,<,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Operador_relacional,Comprueba si el operando izquierdo es menor,Implementado
+>,MAYOR,>,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Operador_relacional,Comprueba si el operando izquierdo es mayor,Implementado
++=,SUMA_ASIGNACION,+=,"C#, Python, Java, C, C++, JavaScript, PHP",Asignacion_compuesta,Suma y guarda el resultado,Implementado
+-=,RESTA_ASIGNACION,-=,"C#, Python, Java, C, C++, JavaScript, PHP",Asignacion_compuesta,Resta y guarda el resultado,Implementado
+*=,MULT_ASIGNACION,*=,"C#, Python, Java, C, C++, JavaScript, PHP",Asignacion_compuesta,Multiplica y guarda el resultado,Implementado
+/=,DIV_ASIGNACION,/=,"C#, Python, Java, C, C++, JavaScript, PHP",Asignacion_compuesta,Divide y guarda el resultado,Implementado
+%=,MOD_ASIGNACION,%=,"C#, Python, Java, C, C++, JavaScript, PHP",Asignacion_compuesta,Calcula y guarda el residuo,Implementado
++,SUMA,+,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Operador_aritmetico,Suma valores y puede concatenar cadenas,Implementado
+-,RESTA,-,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Operador_aritmetico,Resta valores o funciona como negación unaria,Implementado
+*,MULT,*,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Operador_aritmetico,Multiplica valores,Implementado
+/,DIV,/,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Operador_aritmetico,Divide valores; resultado depende de tipos y reglas del lenguaje,Implementado
+%,MOD,%,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Operador_aritmetico,Obtiene el residuo; comportamiento con negativos puede variar,Implementado
+=,ASIGNACION,=,"C#, Python, Java, C, C++, JavaScript, PHP, Go, Rust",Asignacion,Asigna una expresión a una variable,Implementado
+++,INCREMENTO,++,"C#, Java, C, C++, JavaScript, PHP",Incremento,Incrementa una variable; Python no tiene este operador,Implementado
+--,DECREMENTO,--,"C#, Java, C, C++, JavaScript, PHP",Decremento,Decrementa una variable; Python no tiene este operador,Implementado
+&&,AND_LOGICO,&&,"C#, Java, C, C++, JavaScript, PHP",Operador_logico,AND lógico; Python utiliza and,Implementado
+||,OR_LOGICO,||,"C#, Java, C, C++, JavaScript, PHP",Operador_logico,OR lógico; Python utiliza or,Implementado
+!,NOT_LOGICO,!,"C#, Java, C, C++, JavaScript, PHP",Operador_logico,NOT lógico; Python utiliza not,Implementado
+&,AND_BITWISE,&,"C#, Python, Java, C, C++, JavaScript, PHP",Operador_bit_a_bit,AND a nivel de bits,Previsto
+|,OR_BITWISE,|,"C#, Python, Java, C, C++, JavaScript, PHP",Operador_bit_a_bit,OR a nivel de bits,Previsto
+^,XOR_BITWISE,^,"C#, Python, Java, C, C++, JavaScript, PHP",Operador_bit_a_bit,XOR a nivel de bits,Previsto
+~,NOT_BITWISE,~,"C#, Python, Java, C, C++, JavaScript, PHP",Operador_bit_a_bit,Complemento a nivel de bits,Previsto
+<<,SHIFT_IZQ,<<,"C#, Python, Java, C, C++, JavaScript, PHP",Desplazamiento_bits,Desplaza bits a la izquierda,Previsto
+>>,SHIFT_DER,>>,"C#, Python, Java, C, C++, JavaScript, PHP",Desplazamiento_bits,Desplaza bits a la derecha,Previsto
+??,COALESCENCIA_NULA,??,"C#, JavaScript, PHP",Operador_nulo,Usa el valor alternativo cuando el primero es nulo,Previsto
+?.,ACCESO_CONDICIONAL,?.,"C#, JavaScript, Kotlin",Acceso_condicional,Accede a un miembro solo si la referencia no es nula,Previsto
+(,PARENTESIS_IZQ,(,"C#, Python, Java, C, C++, JavaScript, PHP",Delimitador,"Abre parámetros, argumentos o expresión agrupada",Implementado
+),PARENTESIS_DER,),"C#, Python, Java, C, C++, JavaScript, PHP",Delimitador,"Cierra parámetros, argumentos o expresión agrupada",Implementado
+{,LLAVE_IZQ,{,"C#, Java, C, C++, JavaScript, PHP",Delimitador,Abre un bloque; Python utiliza indentación,Implementado
+},LLAVE_DER,},"C#, Java, C, C++, JavaScript, PHP",Delimitador,Cierra un bloque; Python utiliza indentación,Implementado
+[,CORCHETE_IZQ,[,"C#, Python, Java, C, C++, JavaScript, PHP",Delimitador,"Abre un arreglo, lista o acceso por índice",Implementado
+],CORCHETE_DER,],"C#, Python, Java, C, C++, JavaScript, PHP",Delimitador,"Cierra un arreglo, lista o acceso por índice",Implementado
+;,PUNTO_Y_COMA,;,"C#, Java, C, C++, JavaScript, PHP",Delimitador,Termina instrucciones; Python normalmente no lo requiere,Implementado
+:,DOS_PUNTOS,:,"C#, Python, Java, C, C++, JavaScript, PHP",Delimitador,Separa etiquetas o inicia bloques en Python,Implementado
+",",COMA,",","C#, Python, Java, C, C++, JavaScript, PHP",Delimitador,"Separa variables, parámetros y argumentos",Implementado
+.,PUNTO,.,"C#, Python, Java, C, C++, JavaScript, PHP",Acceso_a_miembro,"Separa clases, métodos, propiedades y módulos",Implementado
+using,USING,using,C#,Importacion,Importa espacios de nombres o declara recursos,Previsto
+import,IMPORT,import,"Python, Java, C++, JavaScript, PHP",Importacion,"Importa módulos, paquetes o bibliotecas",Previsto
+from,FROM,from,Python,Importacion,Indica el módulo desde el que se importa,Previsto
+namespace,NAMESPACE,namespace,C#,Organizacion_de_codigo,Declara un espacio de nombres,Previsto
+class,CLASS,class,"C#, Python, Java, C++, JavaScript, PHP",Programacion_orientada_a_objetos,Declara una clase,Previsto
+interface,INTERFACE,interface,"C#, Java, TypeScript, PHP",Programacion_orientada_a_objetos,Declara un contrato que implementan las clases,Previsto
+struct,STRUCT,struct,"C#, C, C++, Go",Tipo_compuesto,Declara un tipo compuesto por campos,Previsto
+enum,ENUM,enum,"C#, Java, C, C++, Python",Tipo_enumerado,Define un conjunto de constantes con nombre,Previsto
+this,THIS,this,"C#, Java, C++, JavaScript, PHP",Referencia_de_instancia,Referencia a la instancia actual; Python suele utilizar self,Previsto
+base,BASE,base,C#,Herencia,Accede a miembros de la clase base,Previsto
+extends,EXTENDS,extends,"Java, PHP, JavaScript",Herencia,Indica herencia de una clase,Previsto
+implements,IMPLEMENTS,implements,"Java, PHP",Herencia_e_interfaces,Indica implementación de una interfaz,Previsto
+abstract,ABSTRACT,abstract,"C#, Java, PHP",Modificador,Declara clases o miembros abstractos,Previsto
+virtual,VIRTUAL,virtual,"C#, C++",Modificador,Permite redefinir un método en una clase derivada,Previsto
+override,OVERRIDE,override,"C#, Kotlin; Java usa anotación @Override",Modificador,Indica que un miembro redefine uno heredado,Previsto
+function,FUNCTION,function,"JavaScript, PHP",Declaracion_de_funcion,Declara una función; otros lenguajes usan def o func,Previsto
+def,DEF,def,Python,Declaracion_de_funcion,Declara una función en Python,Previsto
+lambda,LAMBDA,lambda,"C#, Python, Java, JavaScript, PHP",Funciones_lambda,Define una función anónima,Previsto
+pass,PASS,pass,Python,Control_de_bloque,Instrucción vacía utilizada como marcador de bloque,Previsto
+global,GLOBAL,global,Python,Alcance_de_variable,Declara que una variable pertenece al ámbito global,Previsto
+del,DEL,del,Python,Eliminacion,"Elimina una referencia, elemento o atributo",Previsto
+with,WITH,with,Python,Contexto,Gestiona un contexto y recursos en Python,Previsto
+as,AS,as,"C#, Python, JavaScript, SQL",Alias_y_conversion,Define alias o participa en conversiones y patrones,Previsto
+is,IS,is,Python,Operador_identidad,Comprueba si dos referencias corresponden al mismo objeto,Previsto
+is not,IS_NOT,is not,Python,Operador_identidad,Comprueba que dos referencias no sean el mismo objeto,Previsto
+nameof,NAMEOF,nameof,C#,Operador_especial,Obtiene el nombre textual de un símbolo,Previsto
+typeof,TYPEOF,typeof,"C#, JavaScript",Operador_tipo,Obtiene información del tipo según el lenguaje,Previsto
+sizeof,SIZEOF,sizeof,"C#, C, C++",Operador_tipo,Obtiene el tamaño en bytes de un tipo o variable,Previsto
+checked,CHECKED,checked,C#,Contexto_aritmetico,Comprueba desbordamientos aritméticos enteros,Previsto
+unchecked,UNCHECKED,unchecked,C#,Contexto_aritmetico,Permite operaciones enteras sin comprobación de desbordamiento,Previsto
+lock,LOCK,lock,C#,Concurrencia,Protege una sección crítica mediante exclusión mutua,Previsto
+volatile,VOLATILE,volatile,"C#, Java, C, C++",Modificador,Indica reglas especiales de acceso a variables compartidas,Previsto
+<NUMERO_HEXADECIMAL>,NUMERO_HEXADECIMAL,0x[0-9A-Fa-f]+,"C#, Python, Java, C, C++, JavaScript, PHP",Literal_entero,Representa un entero en base hexadecimal,Previsto
+<NUMERO_BINARIO>,NUMERO_BINARIO,0b[01]+,"C#, Python, Java, C, C++, JavaScript",Literal_entero,Representa un entero en base binaria,Previsto
+<NUMERO_EXPONENTE>,NUMERO_EXPONENTE,notación e/E,"C#, Python, Java, C, C++, JavaScript, PHP",Literal_decimal,Representa un número en notación científica,Previsto
+<CADENA_INTERPOLADA>,CADENA_INTERPOLADA,"$""...""",C#; Python usa f-strings; JavaScript usa template literals,Literal_cadena,Combina texto con expresiones evaluadas,Previsto
+<CADENA_VERBATIM>,CADENA_VERBATIM,"@""...""",C#,Literal_cadena,Conserva barras invertidas y saltos de línea según reglas de C#,Previsto
+<CADENA_MULTILINEA>,CADENA_MULTILINEA,"""""""...""""""","Python, C# (raw strings), Java (text blocks)",Literal_cadena,Representa cadenas que abarcan varias líneas,Previsto

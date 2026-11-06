@@ -1,0 +1,36 @@
+int limite = 5;
+int suma = 0;
+double promedio = 0.0;
+bool esMayor = false;
+
+int[] numeros = new int[] { 2, 4, 6, 8, 10 };
+
+foreach (int numero in numeros)
+{
+    suma += numero;
+}
+
+promedio = Convert.ToDouble(suma) / numeros.Length;
+
+if (promedio > limite)
+{
+    esMayor = true;
+    Console.WriteLine("El promedio es mayor que el limite");
+}
+else
+{
+    esMayor = false;
+    Console.WriteLine("El promedio no supera el limite");
+}
+
+for (int i = 0; i < numeros.Length; i++)
+{
+    if (numeros[i] > promedio)
+    {
+        Console.WriteLine(numeros[i]);
+    }
+}
+
+Console.WriteLine(suma);
+Console.WriteLine(promedio);
+Console.WriteLine(esMayor);

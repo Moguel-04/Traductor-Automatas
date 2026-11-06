@@ -1,0 +1,22 @@
+int resultado = 0;
+
+try
+{
+    int numero = 10;
+    int divisor = 0;
+
+    resultado = numero / divisor;
+
+    Console.WriteLine("Division realizada");
+}
+catch (Exception)
+{
+    Console.WriteLine("Se produjo un error");
+    resultado = -1;
+}
+finally
+{
+    Console.WriteLine("Finalizo el bloque");
+}
+
+Console.WriteLine(resultado);

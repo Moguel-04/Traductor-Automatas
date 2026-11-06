@@ -1,0 +1,32 @@
+string textoEdad = "20";
+string textoAltura = "1.75";
+string textoActivo = "true";
+
+int edad = int.Parse(textoEdad);
+double altura = double.Parse(textoAltura);
+bool activo = bool.Parse(textoActivo);
+
+int puntos = Convert.ToInt32(edad / 2.0);
+double resultado = altura * 2 + puntos;
+
+bool condicion1 = edad >= 18 && activo == true;
+bool condicion2 = puntos > 5 || altura < 1.0;
+bool condicion3 = !(edad < 18);
+
+if (condicion1 && condicion2 == false && condicion3)
+{
+    Console.WriteLine("Condiciones cumplidas");
+}
+
+puntos += 5;
+resultado -= 2.5;
+
+if (puntos == 15 || resultado >= 40)
+{
+    Console.WriteLine("Resultado valido");
+}
+
+Console.WriteLine(edad);
+Console.WriteLine(altura);
+Console.WriteLine(puntos);
+Console.WriteLine(resultado);

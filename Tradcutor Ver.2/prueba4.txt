@@ -1,0 +1,31 @@
+int sumar(int a, int b)
+{
+    return a + b;
+}
+
+int calcularTotal(int cantidad, int precio)
+{
+    int total = 0;
+
+    for (int i = 0; i < cantidad; i++)
+    {
+        total += precio;
+    }
+
+    return total;
+}
+
+int resultado1 = sumar(10, 20);
+int resultado2 = calcularTotal(4, 5);
+
+if (resultado1 > resultado2)
+{
+    Console.WriteLine("La primera suma es mayor");
+}
+else
+{
+    Console.WriteLine("El total calculado es mayor o igual");
+}
+
+Console.WriteLine(resultado1);
+Console.WriteLine(resultado2);

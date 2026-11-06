@@ -1,0 +1,30 @@
+int calcularSuma(int[] numeros)
+{
+    int suma = 0;
+
+    foreach (int numero in numeros)
+    {
+        suma += numero;
+    }
+
+    return suma;
+}
+
+double calcularPromedio(int[] numeros)
+{
+    int suma = calcularSuma(numeros);
+    return Convert.ToDouble(suma) / numeros.Length;
+}
+
+int[] valores = new int[] { 10, 20, 30, 40 };
+
+int total = calcularSuma(valores);
+double promedio = calcularPromedio(valores);
+
+if (promedio >= 25 && total == 100)
+{
+    Console.WriteLine("Datos correctos");
+}
+
+Console.WriteLine(total);
+Console.WriteLine(promedio);

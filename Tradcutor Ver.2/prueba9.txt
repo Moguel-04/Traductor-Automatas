@@ -1,0 +1,60 @@
+int[] numeros = { 10, 20, 30, 40 };
+
+int calcularSuma(int[] valores)
+{
+    int suma = 0;
+
+    foreach (int valor in valores)
+    {
+        suma += valor;
+    }
+
+    return suma;
+}
+
+double calcularPromedio(int[] valores)
+{
+    int suma = calcularSuma(valores);
+    double promedio = Convert.ToDouble(suma) / valores.Length;
+
+    return promedio;
+}
+
+int total = 0;
+double promedio = 0.0;
+
+try
+{
+    for (int i = 0; i < 4; i++)
+    {
+        if (numeros[i] == 30)
+        {
+            continue;
+        }
+
+        total += numeros[i];
+    }
+
+    promedio = calcularPromedio(numeros);
+
+    Console.WriteLine("Promedio calculado:");
+    Console.WriteLine(promedio);
+
+    int divisor = 0;
+    int resultado = total / divisor;
+
+    Console.WriteLine("Division realizada:");
+    Console.WriteLine(resultado);
+}
+catch (Exception)
+{
+    Console.WriteLine("Se produjo un error durante el calculo.");
+    total = -1;
+}
+finally
+{
+    Console.WriteLine("Proceso finalizado.");
+}
+
+Console.WriteLine("Total final:");
+Console.WriteLine(total);

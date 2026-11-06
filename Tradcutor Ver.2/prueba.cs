@@ -1,57 +1,125 @@
-int contador = 0;
-int limite = 5;
-string mensaje = "Iniciando";
-boolean activo = true;
-double promedio = 10.5;
+// Pruebas
+int[] numeros = { 5, 10, 15, 20 };
 
-print(mensaje);
-
-while (contador < limite)
+int sumarElementos(int[] datos)
 {
-    print(contador);
+    int suma = 0;
 
-    if (contador == 2)
+    foreach (int numero in datos)
     {
-        print("Llegamos al punto medio");
-    }
-    else
-    {
-        print("Continuamos");
+        suma += numero;
     }
 
-    contador = contador + 1;
+    return suma;
+}
+
+double calcularPromedio(int[] datos)
+{
+    int suma = sumarElementos(datos);
+    double promedio = Convert.ToDouble(suma) / datos.Length;
+
+    return promedio;
+}
+
+string mensaje = null;
+string nombre = "Kain";
+
+int limite = int.Parse("10");
+double promedio = calcularPromedio(numeros);
+bool activo = bool.Parse("true");
+
+char inicial = Convert.ToChar(65);
+int codigo = Convert.ToInt32(inicial);
+
+int sumaTotal = sumarElementos(numeros);
+int acumulado = 0;
+int residuo = 17 % 5;
+
+for (int i = 0; i < numeros.Length; i++)
+{
+    if (numeros[i] == 10)
+    {
+        continue;
+    }
+
+    acumulado += numeros[i];
+}
+
+while (acumulado < 45)
+{
+    acumulado++;
+
+    if (acumulado == 42)
+    {
+        continue;
+    }
+
+    if (acumulado == 44)
+    {
+        break;
+    }
 }
 
 do
 {
-    print(contador);
-    contador = contador - 1;
+    acumulado--;
 }
-while (contador > 0);
+while (acumulado > 42);
 
-for (i = 0; i < 3; i = i + 1)
-{
-    println(i);
-}
+int opcion = 2;
 
-switch (contador)
+switch (opcion)
 {
-    case 0:
-        print("El contador termino en cero");
+    case 1:
+        acumulado += 1;
         break;
 
-    case 1:
-        print("El contador termino en uno");
+    case 2:
+        acumulado += 3;
         break;
 
     default:
-        print("El contador tiene otro valor");
+        acumulado = 0;
         break;
 }
 
-foreach (int numero in numeros)
+if (mensaje == null)
 {
-    print(numero);
+    mensaje = "Resumen";
 }
 
-return;
+try
+{
+    if (promedio > limite && activo)
+    {
+        Console.WriteLine("El promedio supera el limite");
+    }
+    else
+    {
+        Console.WriteLine("El promedio no supera el limite");
+    }
+
+    Console.WriteLine(mensaje);
+    Console.WriteLine(nombre);
+    Console.WriteLine(promedio);
+    Console.WriteLine(sumaTotal);
+    Console.WriteLine(acumulado);
+    Console.WriteLine(residuo);
+    Console.WriteLine(inicial);
+    Console.WriteLine(codigo);
+
+    int divisor = 0;
+    int resultado = sumaTotal / divisor;
+
+    Console.WriteLine(resultado);
+}
+catch (Exception)
+{
+    Console.WriteLine("Se capturo una excepcion");
+}
+finally
+{
+    Console.WriteLine("Proceso finalizado");
+}
+
+Console.WriteLine(activo);

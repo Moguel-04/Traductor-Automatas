@@ -1,0 +1,25 @@
+string nombre = "Kain";
+char inicial = 'K';
+string mensaje = null;
+bool activo = true;
+
+if (mensaje == null)
+{
+    mensaje = "Bienvenido";
+}
+
+string saludo = mensaje + " " + nombre;
+Console.WriteLine(saludo);
+
+char letra = Convert.ToChar(65);
+int codigo = Convert.ToInt32(letra);
+
+if (activo && inicial == letra)
+{
+    Console.WriteLine(saludo);
+}
+
+Console.WriteLine(inicial);
+Console.WriteLine(letra);
+Console.WriteLine(codigo);
+Console.WriteLine("Hola\nMundo");

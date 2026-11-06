@@ -1,0 +1,51 @@
+int opcion = 2;
+int resultado = 0;
+
+switch (opcion)
+{
+    case 1:
+        resultado = 10;
+        Console.WriteLine("Opcion uno");
+        break;
+
+    case 2:
+        resultado = 20;
+        Console.WriteLine("Opcion dos");
+        break;
+
+    case 3:
+        resultado = 30;
+        Console.WriteLine("Opcion tres");
+        break;
+
+    default:
+        resultado = -1;
+        Console.WriteLine("Opcion no valida");
+        break;
+}
+
+resultado += 5;
+
+if (resultado > 20)
+{
+    Console.WriteLine("Resultado mayor que veinte");
+}
+
+Console.WriteLine(resultado);
+
+int otraOpcion = 8;
+
+switch (otraOpcion)
+{
+    case 1:
+        Console.WriteLine("Primera opcion");
+        break;
+
+    case 2:
+        Console.WriteLine("Segunda opcion");
+        break;
+
+    default:
+        Console.WriteLine("Se ejecuto default");
+        break;
+}
